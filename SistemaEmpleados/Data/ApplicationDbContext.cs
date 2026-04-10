@@ -33,6 +33,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Entrevista> Entrevistas { get; set; }
     public DbSet<NotaCandidato> NotasCandidato { get; set; }
     public DbSet<Documento> Documentos { get; set; }
+    public DbSet<ReporteProgramado> ReportesProgramados { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -318,6 +319,16 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
         builder.Entity<Documento>()
             .Property(d => d.TamanioBytes).HasPrecision(18, 2);
+
+        // ── ReporteProgramado ──
+        builder.Entity<ReporteProgramado>()
+            .HasQueryFilter(r => !r.IsDeleted);
+
+        builder.Entity<ReporteProgramado>()
+            .HasOne(r => r.Departamento)
+            .WithMany()
+            .HasForeignKey(r => r.DepartamentoId)
+            .OnDelete(DeleteBehavior.SetNull);
 
         builder.Entity<Candidato>()
             .Property(c => c.CalificacionGeneral).HasPrecision(3, 1);

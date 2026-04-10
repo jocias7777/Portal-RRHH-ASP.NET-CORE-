@@ -1,0 +1,406 @@
+@{
+    ViewData["Title"] = "Reportes RRHH";
+    Layout = "_Layout";
+}
+@section HeadStyles {
+    <link rel="stylesheet" href="~/css/views/reportes.css" asp-append-version="true" />
+}
+<div class="module-page animate__animated animate__fadeIn">
+    <!-- ── HEADER ── -->
+    <div class="module-header">
+        <div class="module-header-left">
+            <div>
+                <h1 class="module-title">Reportes RRHH</h1>
+                <p class="module-subtitle">Genera reportes de nómina, cumplimiento legal, asistencia y más</p>
+            </div>
+        </div>
+        <div class="module-header-right">
+            <button class="btn-new" data-bs-toggle="modal" data-bs-target="#modalReporteProgramado">
+                Programar Reporte
+            </button>
+        </div>
+    </div>
+
+    <!-- ── TABS DE NAVEGACIÓN ── -->
+    <ul class="nav nav-tabs module-tabs" id="reportesTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tab-generar-tab" data-bs-toggle="tab" data-bs-target="#tab-generar" type="button" role="tab">
+                Generar Reportes
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-programados-tab" data-bs-toggle="tab" data-bs-target="#tab-programados" type="button" role="tab">
+                Reportes Programados
+            </button>
+        </li>
+    </ul>
+
+    <!-- ── CONTENIDO TABS ── -->
+    <div class="tab-content module-tab-content" id="reportesTabsContent">
+        
+        <!-- ════════════════════════════════════════════
+             TAB: GENERAR REPORTES
+             ════════════════════════════════════════════ -->
+        <div class="tab-pane fade show active" id="tab-generar" role="tabpanel">
+            <!-- ── GRID DE REPORTES ── -->
+            <div class="reportes-grid">
+
+                <!-- ════════════════════════════════════════════
+                     NÓMINA Y COSTOS LABORALES
+                     ════════════════════════════════════════════ -->
+                <div class="reporte-card" data-categoria="nomina">
+                    <div class="reporte-card-icon">
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                    </div>
+                    <h3 class="reporte-card-title">Nómina y Costos</h3>
+                    <p class="reporte-card-desc">Planilla mensual, Bono 14, Aguinaldo y costos por departamento</p>
+                    <div class="reporte-card-actions">
+                        <button class="btn btn-reporte" data-reporte="planilla-mensual">
+                            <i class="fa-solid fa-table"></i> Planilla Mensual
+                        </button>
+                        <button class="btn btn-reporte" data-reporte="bono14-aguinaldo">
+                            <i class="fa-solid fa-gift"></i> Bono 14 y Aguinaldo
+                        </button>
+                        <button class="btn btn-reporte" data-reporte="costo-departamento">
+                            <i class="fa-solid fa-building"></i> Costo por Dpto.
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ════════════════════════════════════════════
+                     CUMPLIMIENTO LEGAL
+                     ════════════════════════════════════════════ -->
+                <div class="reporte-card" data-categoria="cumplimiento">
+                    <div class="reporte-card-icon">
+                        <i class="fa-solid fa-scale-balanced"></i>
+                    </div>
+                    <h3 class="reporte-card-title">Cumplimiento Legal</h3>
+                    <p class="reporte-card-desc">Contratos por vencer, documentos faltantes, Art. 14 CT</p>
+                    <div class="reporte-card-actions">
+                        <button class="btn btn-reporte" data-reporte="contratos-vencer">
+                            <i class="fa-solid fa-file-contract"></i> Contratos por Vencer
+                        </button>
+                        <button class="btn btn-reporte" data-reporte="sin-documentos">
+                            <i class="fa-solid fa-folder-open"></i> Sin Documentos
+                        </button>
+                        <button class="btn btn-reporte" data-reporte="nacionalidad">
+                            <i class="fa-solid fa-passport"></i> Art. 14 CT
+                        </button>
+                        <button class="btn btn-reporte" data-reporte="vacaciones-no-tomadas">
+                            <i class="fa-solid fa-calendar-xmark"></i> Vacaciones No Tomadas
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ════════════════════════════════════════════
+                     ASISTENCIA Y TIEMPO
+                     ════════════════════════════════════════════ -->
+                <div class="reporte-card" data-categoria="asistencia">
+                    <div class="reporte-card-icon">
+                        <i class="fa-solid fa-clock"></i>
+                    </div>
+                    <h3 class="reporte-card-title">Asistencia y Tiempo</h3>
+                    <p class="reporte-card-desc">Inasistencias, tardanzas, horas extra y faltas recurrentes</p>
+                    <div class="reporte-card-actions">
+                        <button class="btn btn-reporte" data-reporte="inasistencias-tardanzas">
+                            <i class="fa-solid fa-calendar-day"></i> Inasistencias y Tardanzas
+                        </button>
+                        <button class="btn btn-reporte" data-reporte="horas-extra">
+                            <i class="fa-solid fa-hourglass-half"></i> Horas Extra
+                        </button>
+                        <button class="btn btn-reporte" data-reporte="mas-de-tres-faltas">
+                            <i class="fa-solid fa-triangle-exclamation"></i> +3 Faltas Mes
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ════════════════════════════════════════════
+                     ROTACIÓN DE PERSONAL
+                     ════════════════════════════════════════════ -->
+                <div class="reporte-card" data-categoria="rotacion">
+                    <div class="reporte-card-icon">
+                        <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                    </div>
+                    <h3 class="reporte-card-title">Rotación de Personal</h3>
+                    <p class="reporte-card-desc">Altas, bajas, motivos de salida y tiempo de permanencia</p>
+                    <div class="reporte-card-actions">
+                        <button class="btn btn-reporte" data-reporte="altas-bajas">
+                            <i class="fa-solid fa-chart-line"></i> Altas y Bajas
+                        </button>
+                        <button class="btn btn-reporte" data-reporte="motivos-salida">
+                            <i class="fa-solid fa-door-open"></i> Motivos de Salida
+                        </button>
+                        <button class="btn btn-reporte" data-reporte="tiempo-permanencia">
+                            <i class="fa-solid fa-hourglass-start"></i> Tiempo Permanencia
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ════════════════════════════════════════════
+                     PRESTACIONES E INDEMNIZACIONES
+                     ════════════════════════════════════════════ -->
+                <div class="reporte-card" data-categoria="prestaciones">
+                    <div class="reporte-card-icon">
+                        <i class="fa-solid fa-hand-holding-dollar"></i>
+                    </div>
+                    <h3 class="reporte-card-title">Prestaciones e Indemnizaciones</h3>
+                    <p class="reporte-card-desc">Proyección de indemnizaciones, vacaciones acumuladas, finiquitos</p>
+                    <div class="reporte-card-actions">
+                        <button class="btn btn-reporte" data-reporte="proyeccion-indemnizacion">
+                            <i class="fa-solid fa-calculator"></i> Proyección Indemnización
+                        </button>
+                        <button class="btn btn-reporte" data-reporte="vacaciones-acumuladas">
+                            <i class="fa-solid fa-calendar-check"></i> Vacaciones Acumuladas
+                        </button>
+                        <button class="btn btn-reporte" data-reporte="finiquitos">
+                            <i class="fa-solid fa-file-signature"></i> Finiquitos Emitidos
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ════════════════════════════════════════════
+                     EXPEDIENTES
+                     ════════════════════════════════════════════ -->
+                <div class="reporte-card" data-categoria="expedientes">
+                    <div class="reporte-card-icon">
+                        <i class="fa-solid fa-folder-tree"></i>
+                    </div>
+                    <h3 class="reporte-card-title">Expedientes</h3>
+                    <p class="reporte-card-desc">Completitud de expedientes y documentos vencidos</p>
+                    <div class="reporte-card-actions">
+                        <button class="btn btn-reporte" data-reporte="completitud-expedientes">
+                            <i class="fa-solid fa-clipboard-check"></i> Completitud Expedientes
+                        </button>
+                        <button class="btn btn-reporte" data-reporte="documentos-vencidos">
+                            <i class="fa-solid fa-calendar-xmark"></i> Documentos Vencidos
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ════════════════════════════════════════════
+             TAB: REPORTES PROGRAMADOS
+             ════════════════════════════════════════════ -->
+        <div class="tab-pane fade" id="tab-programados" role="tabpanel">
+            <div class="card-module">
+                <div class="card-module-header">
+                    <h3>Reportes Programados</h3>
+                    <p class="card-module-subtitle">Configura el envío automático de reportes por correo electrónico</p>
+                </div>
+                <div class="card-module-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover datatable" id="tablaReportesProgramados">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Tipo de Reporte</th>
+                                    <th>Frecuencia</th>
+                                    <th>Email Destino</th>
+                                    <th>Próximo Envío</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted">
+                                        <i class="fa-solid fa-spinner fa-spin"></i> Cargando...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ── MODAL DE FILTROS ── -->
+<div class="modal fade" id="modalFiltros" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Filtros del Reporte</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formFiltros">
+                    <div class="mb-3">
+                        <label class="form-label">Fecha Desde</label>
+                        <input type="date" class="form-control" id="filtroFechaDesde" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Fecha Hasta</label>
+                        <input type="date" class="form-control" id="filtroFechaHasta" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Departamento</label>
+                        <select class="form-select" id="filtroDepartamento">
+                            <option value="">Todos los departamentos</option>
+                        </select>
+                    </div>
+                    <div class="mb-3" id="filtroEmpleadoContainer" style="display:none">
+                        <label class="form-label">Empleado</label>
+                        <select class="form-select" id="filtroEmpleado">
+                            <option value="">Todos los empleados</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fa-solid fa-arrow-left me-2"></i>Cancelar
+                </button>
+                <button type="button" class="btn btn-primary" id="btnGenerarReporte">
+                    <i class="fa-solid fa-check me-2"></i>Generar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── MODAL DE RESULTADOS ── -->
+<div class="modal fade" id="modalResultados" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalResultadosTitle">Resultados del Reporte</h5>
+                <div class="ms-auto">
+                    <button class="btn btn-success btn-sm me-2" id="btnExportarExcel">
+                        <i class="fa-solid fa-file-excel"></i> Excel
+                    </button>
+                    <button class="btn btn-danger btn-sm" id="btnExportarPDF">
+                        <i class="fa-solid fa-file-pdf"></i> PDF
+                    </button>
+                </div>
+                <button type="button" class="btn-close ms-2" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="resultadosContenido"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── MODAL REPORTE PROGRAMADO ── -->
+<div class="modal fade" id="modalReporteProgramado" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Programar Reporte Automático</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formReporteProgramado">
+                    <input type="hidden" id="reporteProgramadoId" />
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Nombre del Reporte <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="rpNombre" required placeholder="ej. Planilla Mensual Abril">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tipo de Reporte <span class="text-danger">*</span></label>
+                            <select class="form-select" id="rpTipoReporte" required>
+                                <option value="">Seleccione...</option>
+                                <option value="0">Planilla Mensual</option>
+                                <option value="1">Bono 14 y Aguinaldo</option>
+                                <option value="2">Contratos por Vencer</option>
+                                <option value="3">Documentos Vencidos</option>
+                                <option value="4">Resumen General</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción (opcional)</label>
+                        <textarea class="form-control" id="rpDescripcion" rows="2" placeholder="Notas adicionales sobre este reporte"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Frecuencia <span class="text-danger">*</span></label>
+                            <select class="form-select" id="rpFrecuencia" required>
+                                <option value="0">Mensual</option>
+                                <option value="1">Semanal</option>
+                                <option value="2">Trimestral</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Departamento (opcional)</label>
+                            <select class="form-select" id="rpDepartamento">
+                                <option value="">Todos los departamentos</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Email Destino <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="rpEmailDestino" required placeholder="admin@empresa.com">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Emails CC (opcional)</label>
+                            <input type="text" class="form-control" id="rpEmailsCC" placeholder="otro@empresa.com, gerencia@empresa.com">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Hora de Envío</label>
+                            <input type="time" class="form-control" id="rpHoraEnvio" value="08:00">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Día del Mes</label>
+                            <input type="number" class="form-control" id="rpDiaMes" min="1" max="28" value="1" placeholder="Para frecuencia mensual">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Día de la Semana</label>
+                            <select class="form-select" id="rpDiaSemana">
+                                <option value="">Seleccione...</option>
+                                <option value="0">Domingo</option>
+                                <option value="1">Lunes</option>
+                                <option value="2">Martes</option>
+                                <option value="3">Miércoles</option>
+                                <option value="4">Jueves</option>
+                                <option value="5">Viernes</option>
+                                <option value="6">Sábado</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="rpIncluirExcel" checked>
+                                <label class="form-check-label" for="rpIncluirExcel">Incluir Excel</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="rpIncluirPDF">
+                                <label class="form-check-label" for="rpIncluirPDF">Incluir PDF</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="rpEnviarAlertas" checked>
+                                <label class="form-check-label" for="rpEnviarAlertas">Enviar Alertas</label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fa-solid fa-arrow-left me-2"></i>Cancelar
+                </button>
+                <button type="button" class="btn btn-primary" id="btnGuardarReporteProgramado">
+                    <i class="fa-solid fa-check me-2"></i>Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/modules/reportes.js" asp-append-version="true"></script>
+}

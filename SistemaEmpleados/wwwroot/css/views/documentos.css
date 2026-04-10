@@ -79,8 +79,8 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: #0d9488;
-    color: #fff;
+    background: transparent;
+    color: #1e293b;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -126,6 +126,10 @@
     font-size: 11px;
     padding: 3px 6px;
     border-radius: 3px;
+}
+
+.doc-check-item i {
+    color: #1e293b !important;
 }
 
 .doc-check-item.completo {

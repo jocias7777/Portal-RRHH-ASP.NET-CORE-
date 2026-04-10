@@ -76,6 +76,9 @@ builder.Services.AddScoped<IReclutamientoService, SistemaEmpleados.Services.Impl
 builder.Services.AddScoped<IDocumentoRepository, DocumentoRepository>();
 builder.Services.AddScoped<IDocumentoService, DocumentoService>();
 
+builder.Services.AddScoped<IReportesService, ReportesService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddHostedService<ReporteProgramadoBackgroundService>();
 
 // ── AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));
