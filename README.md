@@ -35,15 +35,3 @@ Sistema de información para la gestión de recursos humanos desarrollado en ASP
 ## Configuración
 
 Editar `appsettings.json` para configurar la cadena de conexión.
-
-## Imágenes
-
-### Dashboard
-![Dashboard](docs/dashboard.png)
-
-### Gestión de Personal
-![Personal](docs/personal.png)
-
-## Licencia
-
-MIT
