@@ -415,8 +415,8 @@ const Asistencia = (() => {
         document.getElementById('asistenciaAtraso').value = '';
 
         if (label) label.innerHTML = es
-            ? '<i class="fa-solid fa-pen me-2" style="color:#0d9488;"></i>Editar Asistencia'
-            : '<i class="fa-solid fa-clock-rotate-left me-2" style="color:#0d9488;"></i>Registrar Asistencia';
+            ? 'Editar Asistencia'
+            : 'Registrar Asistencia';
 
         bootstrap.Modal.getOrCreateInstance(document.getElementById('modalAsistencia')).show();
     }
@@ -447,8 +447,7 @@ const Asistencia = (() => {
             document.getElementById('asistenciaSalida').focus();
 
             const label = document.getElementById('modalAsistenciaLabel');
-            if (label) label.innerHTML =
-                '<i class="fa-solid fa-clock me-2" style="color:#0d9488;"></i>Registrar Salida';
+            if (label) label.innerHTML = 'Registrar Salida';
         }, 350);
     }
 
@@ -652,8 +651,8 @@ const Asistencia = (() => {
         document.getElementById('horarioTolerancia').value = data?.minutosToleranciaTardanza ?? 15;
         document.getElementById('horarioActivo').checked = data?.activo !== false;
         if (label) label.innerHTML = data?.id > 0
-            ? '<i class="fa-solid fa-pen me-2" style="color:#0d9488;"></i>Editar Horario'
-            : '<i class="fa-solid fa-calendar-days me-2" style="color:#0d9488;"></i>Nuevo Horario';
+            ? 'Editar Horario'
+            : 'Nuevo Horario';
         calcularDuracionTurno();
         bootstrap.Modal.getOrCreateInstance(document.getElementById('modalHorario')).show();
     }
