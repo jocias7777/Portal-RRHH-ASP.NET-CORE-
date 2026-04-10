@@ -1,0 +1,779 @@
+﻿@{
+    ViewData["Title"] = "Configuración";
+    Layout = "_Layout";
+}
+@section HeadStyles {
+    <link rel="stylesheet" href="~/css/views/configuracion.css" asp-append-version="true" />
+}
+
+<style>
+    .view-toggle {
+        display: inline-flex;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+
+        .view-toggle button {
+            background: #fff;
+            border: none;
+            padding: 6px 12px;
+            font-size: 13px;
+            color: #64748b;
+            cursor: pointer;;
+            transition: background .15s, color .15s;
+            line-height: 1;
+        }
+
+            .view-toggle button.active {
+                background: var(--config-color);
+                color: #fff;
+            }
+
+            .view-toggle button:not(:last-child) {
+                border-right: 1px solid #e5e7eb;
+            }
+
+    .cards-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .cards-kanban {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 14px;
+    }
+
+    .item-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 4px;
+        padding: 14px 16px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        transition: box-shadow .18s;
+    }
+
+        .item-card:hover {
+            box-shadow: 0 2px 10px rgba(0,0,0,.07);
+        }
+
+    .cards-kanban .item-card {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .card-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        flex-shrink: 0;
+    }
+
+    .card-body-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .card-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1e293b;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .card-subtitle {
+        font-size: 12px;
+        color: #64748b;
+        margin-top: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .card-meta {
+        display: flex;
+        gap: 16px;
+        font-size: 12px;
+        color: #64748b;
+        margin-top: 6px;
+        flex-wrap: wrap;
+    }
+
+        .card-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+    .cards-kanban .card-meta {
+        flex-direction: row;
+    }
+
+    .card-actions {
+        display: flex;
+        gap: 6px;
+        flex-shrink: 0;
+    }
+
+    .cards-kanban .card-actions {
+        margin-top: 4px;
+    }
+
+    .card-actions .btn-act,
+    .kb-card-footer .btn-act {
+        border: none;
+        background: none;
+        box-shadow: none;
+        cursor: pointer;
+        width: 30px;
+        height: 30px;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        transition: background .15s;
+        padding: 0;
+    }
+
+    .card-actions .btn-edit,
+    .kb-card-footer .btn-edit {
+        color: #16a34a;
+    }
+
+        .card-actions .btn-edit:hover,
+        .kb-card-footer .btn-edit:hover {
+            background: #dcfce7;
+        }
+
+    .card-actions .btn-delete,
+    .kb-card-footer .btn-delete {
+        color: #dc2626;
+    }
+
+        .card-actions .btn-delete:hover,
+        .kb-card-footer .btn-delete:hover {
+            background: #fee2e2;
+        }
+
+    .badge-estado-activo {
+        background: #D1FAE5;
+        color: #065F46;
+        padding: 2px 9px;
+        border-radius: 10px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .badge-estado-inactivo {
+        background: #F1F5F9;
+        color: #475569;
+        padding: 2px 9px;
+        border-radius: 10px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .codigo-pill {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .5px;
+        background: var(--config-light, #ede9fe);
+        color: var(--config-color, #7c3aed);
+        border-radius: 4px;
+        padding: 2px 7px;
+    }
+
+    .sal-range {
+        font-size: 12px;
+        color: #059669;
+        font-weight: 600;
+    }
+
+    /* ══ KANBAN BOARD ══ */
+    .kb-board {
+        display: flex;
+        gap: 16px;
+        overflow-x: auto;
+        padding: 4px 2px 20px;
+        align-items: flex-start;
+        scroll-snap-type: x proximity;
+    }
+
+        .kb-board::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .kb-board::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+
+        .kb-board::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+    .kb-col {
+        min-width: 240px;
+        width: 240px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        background: transparent;
+        border-radius: 10px;
+        overflow: hidden;
+        scroll-snap-align: start;
+    }
+
+
+    .kb-col-header {
+        padding: 11px 4px 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: transparent; /* ← sin fondo gris */
+    }
+    .kb-col-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        flex-shrink: 0;
+        /* sin fondo, solo color del icono */
+        background: transparent;
+    }
+
+    .kb-col-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: #1e293b;
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .kb-col-count {
+        font-size: 11px;
+        font-weight: 600;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        color: #64748b;
+        border-radius: 12px;
+        padding: 1px 8px;
+        flex-shrink: 0;
+    }
+
+    .kb-col-body {
+        padding: 0 2px 4px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        overflow-y: auto;
+        max-height: 64vh;
+    }
+
+        .kb-col-body::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .kb-col-body::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 2px;
+        }
+
+    .kb-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 4px;
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        transition: box-shadow .18s, border-color .18s;
+    }
+
+        .kb-card:hover {
+            box-shadow: 0 4px 14px rgba(0,0,0,.1);
+            border-color: #cbd5e1;
+        }
+
+    .kb-card-top {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .kb-code-pill {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .4px;
+        border-radius: 4px;
+        padding: 2px 7px;
+        background: transparent;
+    }
+
+    .kb-card-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: #0f172a;
+        line-height: 1.3;
+    }
+
+    .kb-card-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        font-size: 11px;
+        color: #64748b;
+    }
+
+        .kb-card-meta span {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+    .kb-card-sal {
+        font-size: 12px;
+        font-weight: 700;
+        color: #059669;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .kb-card-footer {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 2px;
+    }
+</style>
+
+<div class="module-page animate__animated animate__fadeIn">
+    <div class="module-header">
+        <div class="module-header-left">
+            <div><h1 class="module-title">Departamentos</h1></div>
+        </div>
+    </div>
+
+    <ul class="nav nav-tabs config-tabs mb-3" id="configTabs">
+        <li class="nav-item">
+            <button class="nav-link active" data-bs-toggle="tab"
+                    data-bs-target="#panelDeptos" type="button">
+                <i></i>Departamentos
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab"
+                    data-bs-target="#panelPuestos" type="button">
+                <i></i>Puestos
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+
+        <!-- PANEL DEPARTAMENTOS -->
+        <div class="tab-pane fade show active" id="panelDeptos">
+            <div class="config-toolbar">
+                <button class="btn btn-config" id="btnNuevoDepto">
+                    <i></i>Nuevo Departamento
+                </button>
+                <div class="view-toggle ms-auto" id="toggleViewDeptos">
+                    <button class="active" data-view="lista" title="Lista">
+                        <i class="fa-solid fa-list"></i>
+                    </button>
+                    <button data-view="kanban" title="Kanban">
+                        <i class="fa-solid fa-table-columns"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="cardsDeptos" class="cards-list"></div>
+        </div>
+
+        <!-- PANEL PUESTOS — solo Kanban, sin filtro, sin toggle -->
+        <div class="tab-pane fade" id="panelPuestos">
+            <div class="config-toolbar">
+                <button class="btn btn-config" id="btnNuevoPuesto">
+                    <i></i>Nuevo Puesto
+                </button>
+            </div>
+            <div id="cardsPuestos"></div>
+        </div>
+
+    </div>
+</div>
+
+@Html.AntiForgeryToken()
+
+<!-- Modal Departamento -->
+<div class="modal fade" id="modalDepto" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content" style="border-radius:4px">
+            <div class="modal-header modal-header-personal">
+                <div class="modal-header-inner">
+                    <div><h5 class="modal-title" id="modalDeptoTitulo">Departamento</h5></div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="formDepto" novalidate>
+                <input type="hidden" id="deptoId" value="0" />
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label required-field">Código</label>
+                            <input type="text" id="deptoCodigo" class="form-control"
+                                   placeholder="RRHH" maxlength="10" required />
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label required-field">Nombre</label>
+                            <input type="text" id="deptoNombre" class="form-control"
+                                   placeholder="Recursos Humanos" required />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Descripción</label>
+                            <textarea id="deptoDescripcion" class="form-control" rows="2"
+                                      placeholder="Descripción opcional..."></textarea>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="deptoActivo" checked />
+                                <label class="form-check-label" for="deptoActivo">Activo</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-radius:0 0 4px 4px">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                         <i class="fa-solid fa-arrow-left me-2"></i>Cancelar
+                        </button>
+                    <button type="submit" class="btn btn-config" id="btnGuardarDepto">
+                        <i class="fa-solid fa-check me-2"></i>Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Puesto -->
+<div class="modal fade" id="modalPuesto" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="border-radius:4px">
+            <div class="modal-header modal-header-personal">
+                <div class="modal-header-inner">
+                    <div><h5 class="modal-title" id="modalPuestoTitulo">Puesto</h5></div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="formPuesto" novalidate>
+                <input type="hidden" id="puestoId" value="0" />
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label required-field">Código</label>
+                            <input type="text" id="puestoCodigo" class="form-control"
+                                   placeholder="CONT-01" maxlength="10" required />
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label required-field">Nombre</label>
+                            <input type="text" id="puestoNombre" class="form-control"
+                                   placeholder="Contador General" required />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label required-field">Departamento</label>
+                            <select id="puestoDepto" class="form-select" required>
+                                <option value="">— Seleccionar —</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Salario mínimo (Q)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">Q</span>
+                                <input type="number" id="puestoSalMin" class="form-control"
+                                       placeholder="0.00" min="0" step="0.01" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Salario máximo (Q)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">Q</span>
+                                <input type="number" id="puestoSalMax" class="form-control"
+                                       placeholder="0.00" min="0" step="0.01" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Nivel jerárquico</label>
+                            <input type="number" id="puestoNivel" class="form-control"
+                                   value="1" min="1" max="10" />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Descripción</label>
+                            <textarea id="puestoDescripcion" class="form-control" rows="2"
+                                      placeholder="Descripción opcional..."></textarea>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="puestoActivo" checked />
+                                <label class="form-check-label" for="puestoActivo">Activo</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-radius:0 0 4px 4px">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="fa-solid fa-arrow-left me-2"></i>Cancelar
+                        </button>
+                    <button type="submit" class="btn btn-config" id="btnGuardarPuesto">
+                        <i class="fa-solid fa-check me-2"></i>Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/modules/configuracion.js" asp-append-version="true"></script>
+}
+
+<script>
+    (function () {
+
+        var PALETA = [
+            { color: '#875A7B', bg: '#f3eef5', bar: '#875A7B' },
+            { color: '#00A09D', bg: '#e6f7f6', bar: '#00A09D' },
+            { color: '#E97A24', bg: '#fdf0e6', bar: '#E97A24' },
+            { color: '#1F6DC0', bg: '#e8f1fb', bar: '#1F6DC0' },
+            { color: '#21867A', bg: '#e6f4f2', bar: '#21867A' },
+            { color: '#C0003B', bg: '#fce8ee', bar: '#C0003B' },
+            { color: '#7C5CBF', bg: '#f0ecf9', bar: '#7C5CBF' },
+            { color: '#0C6B44', bg: '#e6f4ed', bar: '#0C6B44' },
+            { color: '#B45309', bg: '#fffbeb', bar: '#B45309' },
+            { color: '#0369A1', bg: '#e0f2fe', bar: '#0369A1' },
+            { color: '#9D174D', bg: '#fdf2f8', bar: '#9D174D' },
+            { color: '#065F46', bg: '#ecfdf5', bar: '#065F46' },
+        ];
+
+        function escHtml(s) {
+            if (!s) return '';
+            return String(s)
+                .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+                .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+        function fmtNum(n) {
+            if (!n) return '0';
+            return parseFloat(n).toLocaleString('es-GT',
+                { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        // ── Card Departamento ────────────────────────────────────────────────────
+        function cardDepto(d, view) {
+            var bc  = d.activo ? 'badge-estado-activo' : 'badge-estado-inactivo';
+            var bt  = d.activo ? 'Activo' : 'Inactivo';
+            var ico = 'background:transparent;color:var(--config-color,#4A90D9)';
+
+            if (view === 'kanban') {
+                return '<div class="item-card">' +
+                    '<div style="display:flex;align-items:center;gap:10px;width:100%">' +
+                        '<div class="card-icon" style="' + ico + '"><i class="fa-solid fa-building"></i></div>' +
+                        '<div style="flex:1;min-width:0">' +
+                            '<div style="display:flex;align-items:center;gap:8px">' +
+                                '<span class="codigo-pill">' + escHtml(d.codigo) + '</span>' +
+                                '<span class="' + bc + '">' + bt + '</span>' +
+                            '</div>' +
+                            '<div class="card-title mt-1">' + escHtml(d.nombre) + '</div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="card-meta">' +
+                        '<span><i class="fa-solid fa-briefcase"></i>' + (d.totalPuestos||0) + ' puestos</span>' +
+                        '<span><i class="fa-solid fa-users"></i>' + (d.totalEmpleados||0) + ' empleados</span>' +
+                    '</div>' +
+                    (d.descripcion ? '<div class="card-subtitle" style="white-space:normal">' + escHtml(d.descripcion) + '</div>' : '') +
+                    '<div class="card-actions">' +
+                        '<button type="button" class="btn-act btn-edit" data-id="' + d.id + '" title="Editar"><i class="fa-solid fa-pen"></i></button>' +
+                        '<button type="button" class="btn-act btn-delete" data-id="' + d.id + '" title="Eliminar"><i class="fa-solid fa-trash"></i></button>' +
+                    '</div></div>';
+            }
+            return '<div class="item-card">' +
+                '<div class="card-icon" style="' + ico + '"><i class="fa-solid fa-building"></i></div>' +
+                '<div class="card-body-info">' +
+                    '<div style="display:flex;align-items:center;gap:8px">' +
+                        '<span class="card-title">' + escHtml(d.nombre) + '</span>' +
+                        '<span class="codigo-pill">' + escHtml(d.codigo) + '</span>' +
+                        '<span class="' + bc + '">' + bt + '</span>' +
+                    '</div>' +
+                    '<div class="card-meta">' +
+                        (d.descripcion ? '<span>' + escHtml(d.descripcion) + '</span>' : '') +
+                        '<span><i class="fa-solid fa-briefcase"></i>' + (d.totalPuestos||0) + ' puestos</span>' +
+                        '<span><i class="fa-solid fa-users"></i>' + (d.totalEmpleados||0) + ' empleados</span>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="card-actions">' +
+                    '<button type="button" class="btn-act btn-edit" data-id="' + d.id + '" title="Editar"><i class="fa-solid fa-pen"></i></button>' +
+                    '<button type="button" class="btn-act btn-delete" data-id="' + d.id + '" title="Eliminar"><i class="fa-solid fa-trash"></i></button>' +
+                '</div></div>';
+        }
+
+        // ── Board Kanban ─────────────────────────────────────────────────────────
+        function buildKanbanBoard(data) {
+            var orden  = [];
+            var grupos = {};
+            data.forEach(function (p) {
+                var dep = p.departamento || 'Sin departamento';
+                if (!grupos[dep]) { grupos[dep] = []; orden.push(dep); }
+                grupos[dep].push(p);
+            });
+
+            var html = '<div class="kb-board">';
+
+            orden.forEach(function (depNombre, idx) {
+                var lista = grupos[depNombre];
+                var pal   = PALETA[idx % PALETA.length];
+
+                html += '<div class="kb-col">';
+
+                // Header: ícono SIN fondo de color
+                html += '<div class="kb-col-header">' +
+                    '<div class="kb-col-icon" style="color:' + pal.color + '">' +
+                        '<i class="fa-solid fa-building"></i>' +
+                    '</div>' +
+                    '<span class="kb-col-title" title="' + escHtml(depNombre) + '">' + escHtml(depNombre) + '</span>' +
+                    '<span class="kb-col-count">' + lista.length + '</span>' +
+                '</div>';
+
+                html += '<div class="kb-col-body">';
+                lista.forEach(function (p) {
+                    var bc  = p.activo ? 'badge-estado-activo' : 'badge-estado-inactivo';
+                    var bt  = p.activo ? 'Activo' : 'Inactivo';
+                    var sal = '';
+                    if (p.salMin || p.salMax) {
+                        sal = '<div class="kb-card-sal">' +
+                              '<i class="fa-solid fa-coins"></i>' +
+                              'Q' + fmtNum(p.salMin) + ' – Q' + fmtNum(p.salMax) +
+                              '</div>';
+                    }
+
+                    html +=
+                    '<div class="kb-card">' +
+                        // Código pill con fondo suave del color de la columna (sin borde)
+                        '<div class="kb-card-top">' +
+                            '<span class="kb-code-pill" style="color:#0f172a;font-weight:800">' +
+                                escHtml(p.codigo) +
+                            '</span>' +
+                            '<span class="' + bc + '">' + bt + '</span>' +
+                        '</div>' +
+                        '<div class="kb-card-name">' + escHtml(p.nombre) + '</div>' +
+                        '<div class="kb-card-meta">' +
+                            '<span><i class="fa-solid fa-layer-group"></i>Nivel ' + (p.nivel||1) + '</span>' +
+                            '<span><i class="fa-solid fa-users"></i>' + (p.totalEmpleados||0) + ' emp.</span>' +
+                        '</div>' +
+                        sal +
+                        // Botones: solo ícono verde/rojo, sin borde ni caja
+                        '<div class="kb-card-footer">' +
+                            '<button type="button" class="btn-act btn-edit" data-id="' + p.id + '" title="Editar">' +
+                                '<i class="fa-solid fa-pen"></i>' +
+                            '</button>' +
+                            '<button type="button" class="btn-act btn-delete" data-id="' + p.id + '" title="Eliminar">' +
+                                '<i class="fa-solid fa-trash"></i>' +
+                            '</button>' +
+                        '</div>' +
+                    '</div>';
+                });
+
+                html += '</div></div>';
+            });
+
+            html += '</div>';
+            return html;
+        }
+
+        // ── Estado ───────────────────────────────────────────────────────────────
+        var viewDeptos = 'lista';
+
+        // ── Toggle Departamentos ─────────────────────────────────────────────────
+        document.getElementById('toggleViewDeptos').addEventListener('click', function (e) {
+            var btn = e.target.closest('[data-view]');
+            if (!btn) return;
+            viewDeptos = btn.dataset.view;
+            this.querySelectorAll('button').forEach(function (b) {
+                b.classList.toggle('active', b === btn);
+            });
+            var el = document.getElementById('cardsDeptos');
+            if (el) el.className = viewDeptos === 'kanban' ? 'cards-kanban' : 'cards-list';
+            window.ConfigCards.renderDeptos();
+        });
+
+        // ── API pública ──────────────────────────────────────────────────────────
+        window.ConfigCards = (function () {
+            var _deptos  = [];
+            var _puestos = [];
+
+            return {
+                renderDeptos: function (data) {
+                    if (data) _deptos = data;
+                    var el = document.getElementById('cardsDeptos');
+                    if (!el) return;
+                    if (!_deptos.length) {
+                        el.innerHTML = '<p class="text-muted" style="padding:16px">Sin departamentos registrados.</p>';
+                        return;
+                    }
+                    el.innerHTML = _deptos.map(function (d) { return cardDepto(d, viewDeptos); }).join('');
+                },
+
+                renderPuestos: function (data) {
+                    if (data) _puestos = data;
+                    var el = document.getElementById('cardsPuestos');
+                    if (!el) return;
+                    if (!_puestos.length) {
+                        el.innerHTML = '<p class="text-muted" style="padding:16px">Sin puestos registrados.</p>';
+                        return;
+                    }
+                    el.className = '';
+                    el.innerHTML = buildKanbanBoard(_puestos);
+                },
+
+                getViewDeptos: function () { return viewDeptos; }
+            };
+        })();
+
+        // ── Init ─────────────────────────────────────────────────────────────────
+        function tryInit() {
+            if (typeof jQuery !== 'undefined' && typeof Configuracion !== 'undefined') {
+                Configuracion.init();
+            } else {
+                var s = document.createElement('script');
+                s.src = '/js/modules/configuracion.js';
+                s.onload = function () {
+                    if (typeof Configuracion !== 'undefined') Configuracion.init();
+                };
+                document.body.appendChild(s);
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', tryInit);
+        } else {
+            tryInit();
+        }
+
+    })();
+</script>

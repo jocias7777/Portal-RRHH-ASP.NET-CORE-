@@ -1,0 +1,223 @@
+﻿@model SistemaEmpleados.Models.Entities.ApplicationUser
+@{
+    ViewData["Title"] = "Mi Perfil";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="module-page animate__animated animate__fadeIn">
+
+    @* HEADER *@
+    <div class="module-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+        <div class="module-header-left">
+            <div class="module-header-icon" style="background:#1565C020; color:#1565C0;">
+                <i class="fa-solid fa-user"></i>
+            </div>
+            <div>
+                <h1 class="module-title">Mi Perfil</h1>
+                <p class="module-subtitle">Información y configuración de tu cuenta</p>
+            </div>
+        </div>
+
+        @* Botón volver al menú principal - solo ícono *@
+        <a href="@Url.Action("Index", "Home")"
+           title="Volver al menú principal"
+           data-bs-toggle="tooltip"
+           data-bs-placement="left"
+           style="width:38px;height:38px;background:#E2E8F0;color:#475569;border-radius:8px;
+                  display:inline-flex;align-items:center;justify-content:center;
+                  text-decoration:none;font-size:16px;">
+            <i class="fa-solid fa-th-large"></i>
+        </a>
+    </div>
+
+    @* ALERTAS *@
+    @if (TempData["Exito"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+            <i class="fa-solid fa-circle-check me-2"></i>@TempData["Exito"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+            <i class="fa-solid fa-circle-exclamation me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row mt-4 g-4">
+
+        @* COLUMNA IZQUIERDA *@
+        <div class="col-md-4">
+            <div class="table-card p-4 text-center">
+
+                <div style="width:90px;height:90px;border-radius:50%;background:#EFF6FF;
+                            display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                    <i class="fa-solid fa-user" style="font-size:40px;color:#1565C0;"></i>
+                </div>
+
+                <h5 class="fw-semibold mb-1">@Model?.UserName</h5>
+                <p class="text-muted small mb-2">@Model?.Email</p>
+
+                @if (Model?.IsActive == true)
+                {
+                    <span class="badge-estado-activo">Activo</span>
+                }
+                else
+                {
+                    <span class="badge-estado-inactivo">Inactivo</span>
+                }
+
+                <hr class="my-3" />
+
+                <div class="text-start">
+                    <p class="text-muted small mb-2 fw-semibold">
+                        <i class="fa-solid fa-shield me-1"></i>Roles asignados
+                    </p>
+                    @{
+                        var rolesClaims = User.Claims
+                        .Where(c => c.Type == System.Security.Claims.ClaimTypes.Role)
+                        .Select(c => c.Value)
+                        .ToList();
+                    }
+                    @if (rolesClaims.Any())
+                    {
+                        foreach (var rol in rolesClaims)
+                        {
+                            <span class="me-1 mb-1 d-inline-block"
+                                  style="background:#EFF6FF;color:#1D4ED8;padding:3px 10px;
+                                                 border-radius:10px;font-size:11px;font-weight:600;">
+                                @rol
+                            </span>
+                        }
+                    }
+                    else
+                    {
+                        <span class="text-muted small">Sin roles asignados</span>
+                    }
+                </div>
+            </div>
+        </div>
+
+        @* COLUMNA DERECHA *@
+        <div class="col-md-8 d-flex flex-column gap-4">
+
+            @* Datos de la cuenta *@
+            <div class="table-card p-4">
+                <h6 class="fw-semibold mb-3" style="color:#1565C0;font-size:14px;">
+                    <i class="fa-solid fa-circle-info me-2"></i>Datos de la cuenta
+                </h6>
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <label class="form-label text-muted small mb-1">Usuario</label>
+                        <div class="fw-semibold" style="font-size:14px;">@Model?.UserName</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label text-muted small mb-1">Correo electrónico</label>
+                        <div class="fw-semibold" style="font-size:14px;">@Model?.Email</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label text-muted small mb-1">Teléfono</label>
+                        <div class="fw-semibold" style="font-size:14px;">
+                            @(string.IsNullOrEmpty(Model?.PhoneNumber) ? "—" : Model.PhoneNumber)
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label text-muted small mb-1">Email confirmado</label>
+                        <div style="font-size:13px;">
+                            @if (Model?.EmailConfirmed == true)
+                            {
+                                <span style="color:#065F46;font-weight:600;">
+                                    <i class="fa-solid fa-circle-check me-1"></i>Confirmado
+                                </span>
+                            }
+                            else
+                            {
+                                <span style="color:#92400E;font-weight:600;">
+                                    <i class="fa-solid fa-circle-exclamation me-1"></i>Pendiente
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @* Cambiar contraseña *@
+            <div class="table-card p-4">
+                <h6 class="fw-semibold mb-3" style="color:#1565C0;font-size:14px;">
+                    <i class="fa-solid fa-key me-2"></i>Cambiar contraseña
+                </h6>
+
+                <form asp-action="CambiarPassword" asp-controller="Account" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="row g-3">
+
+                        <div class="col-12">
+                            <label class="form-label text-muted small">Contraseña actual</label>
+                            <input type="password" name="PasswordActual"
+                                   class="form-control" placeholder="••••••••" required />
+                        </div>
+
+                        <div class="col-sm-6">
+                            <label class="form-label text-muted small">Nueva contraseña</label>
+                            <input type="password" name="NuevoPassword" id="nuevoPassword"
+                                   class="form-control" placeholder="••••••••" required />
+                        </div>
+
+                        <div class="col-sm-6">
+                            <label class="form-label text-muted small">Confirmar nueva contraseña</label>
+                            <input type="password" name="ConfirmarPassword" id="confirmarPassword"
+                                   class="form-control" placeholder="••••••••" required />
+                        </div>
+
+                        <div class="col-12" id="errorMatch" style="display:none;">
+                            <small class="text-danger">
+                                <i class="fa-solid fa-circle-exclamation me-1"></i>Las contraseñas no coinciden.
+                            </small>
+                        </div>
+
+                        <div class="col-12 mt-1">
+                            <button type="submit" id="btnCambiar"
+                                    style="background:#1565C0;color:#fff;border:none;border-radius:6px;
+                                           padding:9px 20px;font-size:13px;font-weight:600;
+                                           display:inline-flex;align-items:center;gap:6px;">
+                                <i class="fa-solid fa-lock me-1"></i>Actualizar contraseña
+                            </button>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            // Activar tooltips Bootstrap
+            document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (el) {
+                new bootstrap.Tooltip(el);
+            });
+
+            // Validación contraseñas en tiempo real
+            var nuevo     = document.getElementById('nuevoPassword');
+            var confirmar = document.getElementById('confirmarPassword');
+            var errorDiv  = document.getElementById('errorMatch');
+            var btn       = document.getElementById('btnCambiar');
+
+            function validar() {
+                var mismatch = confirmar.value.length > 0 && nuevo.value !== confirmar.value;
+                errorDiv.style.display = mismatch ? 'block' : 'none';
+                btn.disabled = mismatch;
+            }
+
+            if (nuevo && confirmar) {
+                nuevo.addEventListener('input', validar);
+                confirmar.addEventListener('input', validar);
+            }
+        })();
+    </script>
+}

@@ -1,0 +1,357 @@
+﻿@model SistemaEmpleados.Models.ViewModels.EmpleadoViewModel
+
+@{
+    var esEdicion = Model.Id > 0;
+    var titulo = esEdicion ? "Editar Empleado" : "Nuevo Empleado";
+
+    @* FIX NullRef: iniciales seguras con null-conditional *@
+    var inicial1 = Model.PrimerNombre?.FirstOrDefault() ?? '?';
+    var inicial2 = Model.PrimerApellido?.FirstOrDefault() ?? '?';
+    var codigoHeader = esEdicion
+        ? (((SistemaEmpleados.Models.ViewModels.EmpleadoDetalleViewModel?)Model)?.Codigo ?? "")
+        : "Se generará código automáticamente";
+}
+
+<div class="modal-header modal-header-personal">
+    <div class="modal-header-inner">
+        <div class="modal-header-icon">
+            <i class="fa-solid fa-@(esEdicion ? "user-pen" : "user-plus")"></i>
+        </div>
+        <div>
+            <h5 class="modal-title">@titulo</h5>
+            <small class="text-white-50">@codigoHeader</small>
+        </div>
+    </div>
+    <button type="button" class="btn-close btn-close-white"
+            onclick="Personal.cerrarModal()" aria-label="Cerrar"></button>
+</div>
+
+<form id="formEmpleado" novalidate>
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="Id" value="@Model?.Id" />
+
+    <div class="modal-body p-0">
+        <ul class="nav nav-tabs form-tabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" data-bs-toggle="tab"
+                        data-bs-target="#tabPersonal" type="button"
+                        role="tab" aria-controls="tabPersonal" aria-selected="true">
+                    <i></i>Datos Personales
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab"
+                        data-bs-target="#tabLaboral" type="button"
+                        role="tab" aria-controls="tabLaboral" aria-selected="false">
+                    <i></i>Información Laboral
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab"
+                        data-bs-target="#tabDocumentos" type="button"
+                        role="tab" aria-controls="tabDocumentos" aria-selected="false">
+                    <i></i>Documentos
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content form-tab-content">
+
+            <!-- ════════════════ TAB 1 — Datos Personales ════════════════ -->
+            <div class="tab-pane fade show active" id="tabPersonal" role="tabpanel">
+                <!-- Avatar -->
+                <div class="avatar-upload-area mb-4">
+                    <div class="avatar-preview" id="avatarPreview">
+                        @if (!string.IsNullOrEmpty(Model.FotoUrl))
+                        {
+                            @* FIX XSS: se valida en servidor que FotoUrl es URL válida *@
+                            <img src="@Model.FotoUrl" alt="Foto del empleado" id="avatarImg" />
+                        }
+                        else
+                        {
+                            <div class="avatar-initials" id="avatarInitials">
+                                @* FIX NullRef: usar variables precalculadas *@
+                                @inicial1@inicial2
+                            </div>
+                        }
+                    </div>
+                    <div>
+                        @* FIX UX: patrón explícito + mensaje de error personalizado *@
+                        <input type="url"
+                               name="FotoUrl"
+                               id="FotoUrl"
+                               class="form-control form-control-sm"
+                               placeholder="https://ejemplo.com/foto.jpg"
+                               pattern="https?://.+"
+                               title="Debe ser una URL que empiece con https:// o http://"
+                               value="@Model.FotoUrl"
+                               style="width:280px" />
+                        <div class="invalid-feedback">Ingresa una URL válida (https://...)</div>
+                        <small class="text-muted">Ingresa la URL de la imagen del empleado</small>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label required-field" for="PrimerNombre">Primer nombre</label>
+                        <input type="text" name="PrimerNombre" id="PrimerNombre"
+                               class="form-control"
+                               value="@Model.PrimerNombre"
+                               placeholder="Juan"
+                               maxlength="50"
+                               required />
+                        <div class="invalid-feedback"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="SegundoNombre">Segundo nombre</label>
+                        <input type="text" name="SegundoNombre" id="SegundoNombre"
+                               class="form-control"
+                               value="@Model.SegundoNombre"
+                               placeholder="Carlos (opcional)"
+                               maxlength="50" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label required-field" for="PrimerApellido">Primer apellido</label>
+                        <input type="text" name="PrimerApellido" id="PrimerApellido"
+                               class="form-control"
+                               value="@Model.PrimerApellido"
+                               placeholder="García"
+                               maxlength="50"
+                               required />
+                        <div class="invalid-feedback"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="SegundoApellido">Segundo apellido</label>
+                        <input type="text" name="SegundoApellido" id="SegundoApellido"
+                               class="form-control"
+                               value="@Model.SegundoApellido"
+                               placeholder="López (opcional)"
+                               maxlength="50" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label required-field" for="FechaNacimiento">Fecha de nacimiento</label>
+                        <input type="date" name="FechaNacimiento" id="FechaNacimiento"
+                               class="form-control"
+                               value="@Model.FechaNacimiento.ToString("yyyy-MM-dd")"
+                               required />
+                        <div class="invalid-feedback"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="Genero">Género</label>
+                        @* FIX selected="False": usar atributo condicional correcto *@
+                        <select name="Genero" id="Genero" class="form-select">
+                            @foreach (var g in Enum.GetValues<SistemaEmpleados.Models.Entities.Genero>())
+                            {
+                                if (Model.Genero == g)
+                                {
+                                    <option value="@((int)g)" selected>@g</option>
+                                }
+                                else
+                                {
+                                    <option value="@((int)g)">@g</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label required-field" for="Email">Correo electrónico</label>
+                        <input type="email" name="Email" id="Email"
+                               class="form-control"
+                               value="@Model.Email"
+                               placeholder="empleado@empresa.com"
+                               maxlength="150"
+                               required />
+                        <div class="invalid-feedback"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="Telefono">Teléfono</label>
+                        <input type="tel" name="Telefono" id="Telefono"
+                               class="form-control"
+                               value="@Model.Telefono"
+                               placeholder="5xxx-xxxx"
+                               maxlength="20" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- ════════════════ TAB 2 — Información Laboral ════════════════ -->
+            <div class="tab-pane fade" id="tabLaboral" role="tabpanel">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label required-field" for="selectDepartamento">Departamento</label>
+                        <select name="DepartamentoId" id="selectDepartamento"
+                                class="form-select" required>
+                            <option value="">— Seleccionar —</option>
+                            @if (ViewBag.Departamentos != null)
+                            {
+                                foreach (var d in ViewBag.Departamentos)
+                                {
+                                    if (Model.DepartamentoId == d.Id)
+                                    {
+                                        <option value="@d.Id" selected>@d.Nombre</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@d.Id">@d.Nombre</option>
+                                    }
+                                }
+                            }
+                        </select>
+                        <div class="invalid-feedback"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label required-field" for="selectPuesto">Puesto</label>
+                        <select name="PuestoId" id="selectPuesto"
+                                class="form-select" required>
+                            <option value="">— Seleccionar departamento —</option>
+                            @if (ViewBag.Puestos != null)
+                            {
+                                foreach (var p in ViewBag.Puestos)
+                                {
+                                    if (Model.PuestoId == p.Id)
+                                    {
+                                        <option value="@p.Id" data-depto="@p.DepartamentoId" selected>@p.Nombre</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@p.Id" data-depto="@p.DepartamentoId">@p.Nombre</option>
+                                    }
+                                }
+                            }
+                        </select>
+                        <div class="invalid-feedback"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label required-field" for="TipoContrato">Tipo de contrato</label>
+                        @* FIX selected="False" *@
+                        <select name="TipoContrato" id="TipoContrato" class="form-select">
+                            @foreach (var t in Enum.GetValues<SistemaEmpleados.Models.Entities.TipoContrato>())
+                            {
+                                if (Model.TipoContrato == t)
+                                {
+                                    <option value="@((int)t)" selected>@t</option>
+                                }
+                                else
+                                {
+                                    <option value="@((int)t)">@t</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="Estado">Estado</label>
+                        @* FIX selected="False" *@
+                        <select name="Estado" id="Estado" class="form-select">
+                            @foreach (var s in Enum.GetValues<SistemaEmpleados.Models.Entities.EstadoEmpleado>())
+                            {
+                                if (Model.Estado == s)
+                                {
+                                    <option value="@((int)s)" selected>@s</option>
+                                }
+                                else
+                                {
+                                    <option value="@((int)s)">@s</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label required-field" for="FechaIngreso">Fecha de ingreso</label>
+                        <input type="date" name="FechaIngreso" id="FechaIngreso"
+                               class="form-control"
+                               value="@Model.FechaIngreso.ToString("yyyy-MM-dd")"
+                               required />
+                        <div class="invalid-feedback"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="FechaSalida">Fecha de salida</label>
+                        <input type="date" name="FechaSalida" id="FechaSalida"
+                               class="form-control"
+                               value="@Model.FechaSalida?.ToString("yyyy-MM-dd")" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label required-field" for="SalarioBase">Salario base (Q)</label>
+                        <div class="input-group">
+                            <span class="input-group-text">Q</span>
+                            @* FIX UX: agregar max razonable + mensaje de error *@
+                            <input type="number" name="SalarioBase" id="SalarioBase"
+                                   class="form-control"
+                                   value="@Model.SalarioBase"
+                                   min="100"
+                                   max="500000"
+                                   step="0.01"
+                                   required
+                                   placeholder="0.00" />
+                        </div>
+                        <div class="invalid-feedback">Ingresa un salario entre Q100.00 y Q500,000.00</div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="Observaciones">Observaciones</label>
+                        <textarea name="Observaciones" id="Observaciones"
+                                  class="form-control" rows="3"
+                                  maxlength="500"
+                                  placeholder="Notas adicionales...">@Model.Observaciones</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ════════════════ TAB 3 — Documentos ════════════════ -->
+            <div class="tab-pane fade" id="tabDocumentos" role="tabpanel">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label required-field" for="CUI">CUI / DPI (13 dígitos)</label>
+                        <input type="text" name="CUI" id="CUI"
+                               class="form-control"
+                               value="@Model.CUI"
+                               placeholder="1234567890123"
+                               maxlength="13"
+                               minlength="13"
+                               pattern="\d{13}"
+                               inputmode="numeric"
+                               required />
+                        <div class="invalid-feedback">El CUI debe tener exactamente 13 dígitos.</div>
+                        <small class="text-muted">Código Único de Identificación guatemalteco</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="NIT">NIT</label>
+                        <input type="text" name="NIT" id="NIT"
+                               class="form-control"
+                               value="@Model.NIT"
+                               placeholder="12345678-9"
+                               maxlength="15" />
+                        <small class="text-muted">Número de Identificación Tributaria</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="NumeroIGSS">Número IGSS</label>
+                        <input type="text" name="NumeroIGSS" id="NumeroIGSS"
+                               class="form-control"
+                               value="@Model.NumeroIGSS"
+                               placeholder="IGSS-0000000"
+                               maxlength="20" />
+                        <small class="text-muted">Instituto Guatemalteco de Seguridad Social</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="NumeroIRTRA">Número IRTRA</label>
+                        <input type="text" name="NumeroIRTRA" id="NumeroIRTRA"
+                               class="form-control"
+                               value="@Model.NumeroIRTRA"
+                               placeholder="IRTRA-000000"
+                               maxlength="20" />
+                        <small class="text-muted">Instituto de Recreación de los Trabajadores</small>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /tab-content -->
+    </div><!-- /modal-body -->
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary"
+                onclick="Personal.cerrarModal()">
+            <i class="fa-solid fa-arrow-left me-2"></i>Cancelar
+        </button>
+        <button type="submit" class="btn btn-personal" id="btnGuardarEmpleado">
+            <i class="fa-solid fa-check me-2"></i>Guardar
+        </button>
+    </div>
+</form>

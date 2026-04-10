@@ -1,0 +1,467 @@
+@{
+    ViewData["Title"] = "Asistencia y Horarios";
+    Layout = "_Layout";
+}
+@section HeadStyles {
+    <link rel="stylesheet" href="~/css/views/asistencia.css" asp-append-version="true" />
+}
+
+<div class="module-page animate__animated animate__fadeIn">
+
+    <!-- ?? HEADER ?? -->
+    <div class="module-header">
+        <div class="module-header-left">
+            <div>
+                <h1 class="module-title">Asistencia y Horarios</h1>
+            </div>
+        </div>
+        <div class="module-header-right">
+            <span class="text-muted" style="font-size:13px;">
+                <i class="fa-regular fa-calendar me-1"></i>
+                @DateTime.Today.ToString("dddd, dd 'de' MMMM yyyy", new System.Globalization.CultureInfo("es-GT"))
+            </span>
+        </div>
+    </div>
+
+    <!-- ?? KPI CARDS ?? -->
+    <div class="asistencia-kpis">
+        <div class="kpi-card kpi-presentes">
+            <div class="kpi-icon"><i class="fa-solid fa-user-check"></i></div>
+            <div class="kpi-info">
+                <span class="kpi-valor" id="kpiPresentes">—</span>
+                <span class="kpi-label">Presentes hoy</span>
+            </div>
+        </div>
+        <div class="kpi-card kpi-ausentes">
+            <div class="kpi-icon"><i class="fa-solid fa-user-xmark"></i></div>
+            <div class="kpi-info">
+                <span class="kpi-valor" id="kpiAusentes">—</span>
+                <span class="kpi-label">Ausentes</span>
+            </div>
+        </div>
+        <div class="kpi-card kpi-tardanzas">
+            <div class="kpi-icon"><i class="fa-solid fa-clock"></i></div>
+            <div class="kpi-info">
+                <span class="kpi-valor" id="kpiTardanzas">—</span>
+                <span class="kpi-label">Con atraso</span>
+            </div>
+        </div>
+        <div class="kpi-card kpi-hextras">
+            <div class="kpi-icon"><i class="fa-solid fa-briefcase-clock"></i></div>
+            <div class="kpi-info">
+                <span class="kpi-valor" id="kpiHExtras">—</span>
+                <span class="kpi-label">Horas extra hoy</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ?? TABS ?? -->
+    <ul class="nav nav-tabs config-tabs mb-3" id="asistenciaTabs">
+        <li class="nav-item">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tabRegistro" type="button">
+                <i></i>Registros
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabHorarios" type="button">
+                <i></i>Horarios / Turnos
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+
+        <!-- TAB 1: REGISTROS -->
+        <div class="tab-pane fade show active" id="tabRegistro">
+            <div class="config-toolbar">
+                @if (User.IsInRole("SuperAdmin") || User.IsInRole("RRHH"))
+                {
+                    <button class="btn btn-asistencia" id="btnNuevaAsistencia">
+                        <i></i>Registrar Asistencia
+                    </button>
+                }
+                <select id="filtroDeptoAsistencia" class="filtro-select" style="min-width:180px">
+                    <option value="">Todos los departamentos</option>
+                    @if (ViewBag.Departamentos != null)
+                    {
+                        foreach (var d in ViewBag.Departamentos)
+                        {
+                            <option value="@d.Id">@d.Nombre</option>
+                        }
+                    }
+                </select>
+                <select id="filtroEstadoAsistencia" class="filtro-select">
+                    <option value="">Todos los estados</option>
+                    <option value="Presente">Presente</option>
+                    <option value="Ausente">Ausente</option>
+                    <option value="Tardanza">Tardanza</option>
+                    <option value="PermisoJustificado">Permiso</option>
+                </select>
+                <input type="date" id="filtroFechaDesde" class="filtro-select" value="@DateTime.Today.ToString("yyyy-MM-01")" />
+                <input type="date" id="filtroFechaHasta" class="filtro-select" value="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" />
+                <button class="btn btn-outline-secondary btn-sm" id="btnLimpiarAsistencia">
+                    <i class="fa-solid fa-rotate-left me-1"></i>
+                </button>
+                <div class="ms-auto">
+                    <span class="badge-count" id="totalAsistencias">0 registros</span>
+                </div>
+            </div>
+
+            <table id="tablaAsistencia" class="table w-100">
+                <thead>
+                    <tr>
+                        <th width="44">#</th>
+                        <th>Empleado</th>
+                        <th>Departamento</th>
+                        <th width="110">Fecha</th>
+                        <th width="90">Entrada</th>
+                        <th width="90">Salida</th>
+                        <th width="90">H. Trabajo</th>
+                        <th width="90">H. Extra</th>
+                        <th width="90">Atraso</th>
+                        <th width="100">Método</th>
+                        <th width="130">Estado</th>
+                        <th width="110" class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+
+        <!-- TAB 2: HORARIOS -->
+        <div class="tab-pane fade" id="tabHorarios">
+            <div class="config-toolbar">
+                @if (User.IsInRole("SuperAdmin") || User.IsInRole("RRHH"))
+                {
+                    <button class="btn btn-asistencia" id="btnNuevoHorario">
+                        <i></i>Nuevo Horario
+                    </button>
+                }
+            </div>
+
+            <table id="tablaHorarios" class="table w-100">
+                <thead>
+                    <tr>
+                        <th width="44">#</th>
+                        <th>Nombre del Turno</th>
+                        <th width="100">Entrada</th>
+                        <th width="100">Salida</th>
+                        <th width="120">Días Laborales</th>
+                        <th width="100">Tolerancia</th>
+                        <th width="120">Estado</th>
+                        <th width="110" class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+
+    </div><!-- /tab-content -->
+
+</div><!-- /module-page -->
+
+<!-- MODAL: REGISTRAR / EDITAR ASISTENCIA -->
+<div class="modal fade" id="modalAsistencia" tabindex="-1" aria-labelledby="modalAsistenciaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalAsistenciaLabel">
+                    <i></i>Registrar Asistencia
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="asistenciaId" value="0" />
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label-sice">Empleado <span class="text-danger">*</span></label>
+                        <select id="asistenciaEmpleado" class="form-select form-select-sice">
+                            <option value="">— Seleccionar empleado —</option>
+                            @if (ViewBag.Empleados != null)
+                            {
+                                foreach (var e in ViewBag.Empleados)
+                                {
+                                    <option value="@e.Id">@e.Nombre</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label-sice">Turno / Horario</label>
+                        <select id="asistenciaTurno" class="form-select form-select-sice">
+                            <option value="">— Sin turno (manual) —</option>
+                            @if (ViewBag.Horarios != null)
+                            {
+                                foreach (var h in ViewBag.Horarios)
+                                {
+                                    <option value="@h.Id"
+                                            data-entrada="@h.HoraEntrada"
+                                            data-salida="@h.HoraSalida"
+                                            data-tolerancia="@h.MinutosToleranciaTardanza">
+                                        @h.Nombre (@h.HoraEntrada — @h.HoraSalida)
+                                    </option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label-sice">Fecha <span class="text-danger">*</span></label>
+                        <input type="date" id="asistenciaFecha" class="form-control form-control-sice" value="" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label-sice">Método de registro</label>
+                        <select id="asistenciaMetodo" class="form-select form-select-sice">
+                            <option value="Manual">Manual</option>
+                            <option value="Biometrico">Biométrico</option>
+                            <option value="Tarjeta">Tarjeta</option>
+                            <option value="App">App móvil</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label-sice">Hora de entrada</label>
+                        <input type="time" id="asistenciaEntrada" class="form-control form-control-sice" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label-sice">Hora de salida</label>
+                        <input type="time" id="asistenciaSalida" class="form-control form-control-sice" />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label-sice">H. Trabajadas</label>
+                        <input type="text" id="asistenciaHsTrabajo" class="form-control form-control-sice bg-light" readonly placeholder="—" />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label-sice">H. Extra</label>
+                        <input type="text" id="asistenciaHsExtra" class="form-control form-control-sice bg-light" readonly placeholder="—" />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label-sice">Atraso</label>
+                        <input type="text" id="asistenciaAtraso" class="form-control form-control-sice bg-light" readonly placeholder="—" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label-sice">Estado</label>
+                        <select id="asistenciaEstado" class="form-select form-select-sice">
+                            <option value="Presente">Presente</option>
+                            <option value="Ausente">Ausente</option>
+                            <option value="Tardanza">Tardanza</option>
+                            <option value="PermisoJustificado">Permiso justificado</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label-sice">Observaciones</label>
+                        <textarea id="asistenciaObservaciones" class="form-control form-control-sice" rows="2" maxlength="300"
+                                  placeholder="Ej: Permiso médico, salida anticipada autorizada..."></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">
+                    <i class="fa-solid fa-arrow-left me-2"></i>Cancelar
+                </button>
+                <button type="button" class="btn btn-asistencia" id="btnGuardarAsistencia">
+                    <i class="fa-solid fa-check me-2"></i>Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: VER DETALLE -->
+<div class="modal fade" id="modalVerAsistencia" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i></i>Detalle de Asistencia
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="verAsistenciaBody"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: CONFIRMAR ELIMINAR ASISTENCIA -->
+<div class="modal fade" id="modalEliminarAsistencia" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0" style="border-radius:2px;padding:8px;">
+            <div class="modal-body text-center py-4 px-4">
+                <div style="width:72px;height:72px;border-radius:50%;border:3px solid #f59e0b;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+                    <span style="font-size:32px;color:#f59e0b;font-weight:700;line-height:1;">!</span>
+                </div>
+                <h5 style="font-size:20px;font-weight:700;color:#111827;margin-bottom:10px;">¿Eliminar registro?</h5>
+                <p style="font-size:14px;color:#6b7280;margin-bottom:28px;">
+                    Vas a eliminar <strong>este registro de asistencia</strong>.<br>
+                    Esta acción no se puede deshacer.
+                </p>
+                <div class="d-flex gap-3 justify-content-center">
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal"
+                            style="min-width:120px;border-radius:2px;font-weight:600;">
+                        Cancelar
+                    </button>
+                    <button type="button"
+                            id="btnConfirmarEliminarAsistencia"
+                            class="btn btn-primary"
+                            style="min-width:120px;border-radius:2px;font-weight:600;background:#2563eb;border-color:#2563eb;">
+                        <i class="fa-solid fa-trash me-2"></i>Sí, eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: CREAR / EDITAR HORARIO -->
+<div class="modal fade" id="modalHorario" tabindex="-1" aria-labelledby="modalHorarioLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalHorarioLabel">
+                    <i></i>Nuevo Horario
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="horarioId" value="0" />
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label-sice">Nombre del turno <span class="text-danger">*</span></label>
+                        <input type="text" id="horarioNombre" class="form-control form-control-sice"
+                               placeholder="Ej: Turno Mañana, Turno Noche, Administrativo..." maxlength="100" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label-sice">Hora de entrada <span class="text-danger">*</span></label>
+                        <input type="time" id="horarioEntrada" class="form-control form-control-sice" value="08:00" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label-sice">Hora de salida <span class="text-danger">*</span></label>
+                        <input type="time" id="horarioSalida" class="form-control form-control-sice" value="17:00" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label-sice">Tolerancia tardanza (minutos)</label>
+                        <input type="number" id="horarioTolerancia" class="form-control form-control-sice" value="15" min="0" max="60" />
+                        <small class="text-muted" style="font-size:11px;">Minutos de gracia antes de marcar tardanza</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label-sice">Duración del turno</label>
+                        <input type="text" id="horarioDuracion" class="form-control form-control-sice bg-light" readonly placeholder="—" />
+                    </div>
+                    <div class="col-12">
+                        <div class="form-check form-switch" style="margin-top:4px;">
+                            <input class="form-check-input" type="checkbox" id="horarioActivo" checked />
+                            <label class="form-check-label" for="horarioActivo" style="font-size:13px;">Horario activo</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">
+                    <i class="fa-solid fa-arrow-left me-2"></i>Cancelar
+                </button>
+                <button type="button" class="btn btn-asistencia" id="btnGuardarHorario">
+                    <i class="fa-solid fa-check me-2"></i>Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: CONFIRMAR ELIMINAR HORARIO -->
+<div class="modal fade" id="modalEliminarHorario" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0" style="border-radius:2px;padding:8px;">
+            <div class="modal-body text-center py-4 px-4">
+                <div style="width:72px;height:72px;border-radius:50%;border:3px solid #f59e0b;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+                    <span style="font-size:32px;color:#f59e0b;font-weight:700;line-height:1;">!</span>
+                </div>
+                <h5 style="font-size:20px;font-weight:700;color:#111827;margin-bottom:10px;">¿Eliminar horario?</h5>
+                <p style="font-size:14px;color:#6b7280;margin-bottom:28px;">
+                    Vas a eliminar el horario <strong id="eliminarHorarioNombre"></strong>.<br>
+                    Esta acción no se puede deshacer.
+                </p>
+                <div class="d-flex gap-3 justify-content-center">
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal"
+                            style="min-width:120px;border-radius:2px;font-weight:600;">
+                        Cancelar
+                    </button>
+                    <button type="button"
+                            id="btnConfirmarEliminarHorario"
+                            class="btn btn-primary"
+                            style="min-width:120px;border-radius:2px;font-weight:600;background:#2563eb;border-color:#2563eb;">
+                        <i class="fa-solid fa-trash me-2"></i>Sí, eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.AntiForgeryToken()
+
+@section Scripts {
+    <script src="~/js/modules/asistencia.js" asp-append-version="true"></script>
+    <script>
+        (function () {
+            if (typeof Asistencia === 'undefined') return;
+
+            let isVisible = true;
+            let initTimeout = null;
+
+            // Inicializar cuando se carga
+            Asistencia.init();
+
+            // Reinicializar cuando se navega por SPA
+            document.addEventListener('spaNavigated', () => {
+                if (document.getElementById('tablaAsistencia')) {
+                    clearTimeout(initTimeout);
+                    initTimeout = setTimeout(() => Asistencia.init(), 100);
+                }
+            });
+
+            // Monitorear visibilidad de la página
+            document.addEventListener('visibilitychange', () => {
+                isVisible = !document.hidden;
+                if (isVisible) {
+                    clearTimeout(initTimeout);
+                    initTimeout = setTimeout(() => Asistencia.init(), 200);
+                }
+            });
+
+            // Monitorear cambios en el DOM (cuando vuelve desde otro módulo)
+            const modulePage = document.querySelector('.module-page');
+            if (modulePage) {
+                const observer = new MutationObserver(() => {
+                    const isDisplayed = window.getComputedStyle(modulePage).display !== 'none';
+                    if (isDisplayed && isVisible) {
+                        clearTimeout(initTimeout);
+                        initTimeout = setTimeout(() => Asistencia.init(), 150);
+                    }
+                });
+
+                observer.observe(modulePage.parentElement, {
+                    attributes: true,
+                    attributeFilter: ['style', 'class'],
+                    subtree: false
+                });
+            }
+
+            // Reinicializar cada vez que se muestra la pestaña (SPA)
+            window.addEventListener('focus', () => {
+                if (document.querySelector('.module-page')?.offsetParent !== null) {
+                    clearTimeout(initTimeout);
+                    initTimeout = setTimeout(() => Asistencia.init(), 200);
+                }
+            });
+        })();
+    </script>
+}

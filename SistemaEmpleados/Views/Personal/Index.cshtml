@@ -1,0 +1,72 @@
+﻿@{
+    ViewData["Title"] = "Gestión de Personal";
+    Layout = "_Layout";
+}
+@section HeadStyles {
+    <link rel="stylesheet" href="~/css/views/personal.css" asp-append-version="true" />
+}
+<div class="module-page animate__animated animate__fadeIn">
+    <!-- ── HEADER ── -->
+    <div class="module-header">
+        <div class="module-header-left">
+            <div>
+                <h1 class="module-title">Gestión de Personal</h1>
+            </div>
+        </div>
+    </div>
+    <!-- ── TOOLBAR ── -->
+    <div class="config-toolbar">
+        @if (User.IsInRole("SuperAdmin") || User.IsInRole("RRHH"))
+        {
+            <button class="btn btn-personal" id="btnNuevoEmpleado">
+                <i></i>Nuevo Empleado
+            </button>
+        }
+        <select id="filtroDepartamento" class="filtro-select" style="min-width:200px">
+            <option value="">Todos los departamentos</option>
+        </select>
+        <select id="filtroEstado" class="filtro-select">
+            <option value="">Todos los estados</option>
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
+            <option value="Suspendido">Suspendido</option>
+            <option value="Baja">Baja</option>
+        </select>
+        <button class="btn btn-outline-secondary btn-sm" id="btnLimpiarFiltros">
+            <i class="fa-solid fa-rotate-left me-1"></i>
+        </button>
+        <div class="ms-auto">
+            <span class="badge-count" id="totalEmpleados">— empleados</span>
+        </div>
+    </div>
+    <!-- ── LISTA ── -->
+    <div class="lista-card" id="listaEmpleados"></div>
+    <!-- ── PAGINACIÓN ── -->
+    <div class="pagination-bar" id="paginacionEmpleados"></div>
+</div>
+<!-- ── MODAL EMPLEADO ── -->
+<div class="modal fade" id="modalEmpleado" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div id="modalEmpleadoBody">
+                <!-- contenido cargado por JS -->
+            </div>
+        </div>
+    </div>
+</div>
+@Html.AntiForgeryToken()
+@section Scripts {
+    <script src="~/js/modules/personal.js" asp-append-version="true"></script>
+}
+<script>
+    (function () {
+        if (typeof Personal !== 'undefined') {
+            Personal.init();
+        } else {
+            var s = document.createElement('script');
+            s.src = '/js/modules/personal.js';
+            s.onload = function () { Personal.init(); };
+            document.body.appendChild(s);
+        }
+    })();
+</script>       

@@ -1,0 +1,234 @@
+﻿@model SistemaEmpleados.Models.ViewModels.EvaluacionViewModel
+
+@{
+    var esEdicion = Model.Id > 0;
+}
+
+<div class="modal-header modal-header-eval">
+    <div class="modal-header-inner">
+        <div class="modal-header-icon">
+            <i class="fa-solid fa-star"></i>
+        </div>
+        <div>
+            <h5 class="modal-title">@(esEdicion ? "Editar Evaluación" : "Nueva Evaluación de Desempeño")</h5>
+            <small class="text-white-50">Calificación de KPIs y desempeño</small>
+        </div>
+    </div>
+    <button type="button" class="btn-close btn-close-white"
+            onclick="Evaluacion.cerrarModal()"></button>
+</div>
+
+<form id="formEvaluacion" novalidate>
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="Id" value="@Model.Id" />
+
+    <div class="modal-body">
+        <div class="row g-3">
+
+            <div class="col-md-8">
+                <label class="form-label required-field">Empleado</label>
+                <select name="EmpleadoId" id="selectEmpleadoEval"
+                        class="form-select" required>
+                    <option value="">— Seleccionar —</option>
+                    @if (ViewBag.Empleados != null)
+                    {
+                        foreach (var e in ViewBag.Empleados)
+                        {
+                            <option value="@e.Id"
+                                    data-puesto="@e.PuestoId"
+                                    selected="@(Model.EmpleadoId == e.Id)">
+                                @e.Nombre
+                            </option>
+                        }
+                    }
+                </select>
+                <div class="invalid-feedback"></div>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Tipo</label>
+                <select name="TipoEvaluacion" class="form-select">
+                    <option value="90" selected="@(Model.TipoEvaluacion == SistemaEmpleados.Models.Entities.TipoEvaluacion.Noventa)">90° (Autoevaluación)</option>
+                    <option value="180" selected="@(Model.TipoEvaluacion == SistemaEmpleados.Models.Entities.TipoEvaluacion.CientoOchenta)">180° (Jefe directo)</option>
+                    <option value="360" selected="@(Model.TipoEvaluacion == SistemaEmpleados.Models.Entities.TipoEvaluacion.Trescientos60)">360° (Todos)</option>
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label required-field">Período</label>
+                <input type="text" name="Periodo" class="form-control"
+                       value="@Model.Periodo"
+                       placeholder="2024-Q1, 2024-S1, 2024..."
+                       required />
+                <small class="text-muted">Ej: 2024-Q1, 2024-S2, 2024-Anual</small>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Fecha</label>
+                <input type="date" name="FechaEvaluacion" class="form-control"
+                       value="@Model.FechaEvaluacion.ToString("yyyy-MM-dd")" />
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Estado</label>
+                <select name="Estado" class="form-select">
+                    @foreach (var s in Enum.GetValues<SistemaEmpleados.Models.Entities.EstadoEvaluacion>())
+                    {
+                        <option value="@((int)s)" selected="@(Model.Estado == s)">@s</option>
+                    }
+                </select>
+            </div>
+
+            <!-- KPIs dinámicos -->
+            <div class="col-12">
+                <div class="kpi-section-header">
+                    <span><i class="fa-solid fa-chart-line me-2"></i>Calificación de KPIs</span>
+                    <button type="button" class="btn btn-sm btn-outline-eval"
+                            id="btnCargarKPIs">
+                        <i class="fa-solid fa-rotate me-1"></i>Cargar KPIs
+                    </button>
+                </div>
+                <div id="kpisContainer">
+                    @if (Model.Resultados.Any())
+                    {
+                        <div class="kpi-list" id="kpiList">
+                            @foreach (var r in Model.Resultados)
+                            {
+                                <div class="kpi-row-item">
+                                    <input type="hidden" name="Resultados[@Model.Resultados.IndexOf(r)].KPIId"
+                                           value="@r.KPIId" />
+                                    <div class="kpi-info">
+                                        <span class="kpi-nombre">@r.NombreKPI</span>
+                                        <span class="kpi-peso">Peso: @r.PesoKPI%</span>
+                                    </div>
+                                    <div class="kpi-calificacion">
+                                        <input type="range" min="0" max="100" step="5"
+                                               value="@r.Calificacion"
+                                               name="Resultados[@Model.Resultados.IndexOf(r)].Calificacion"
+                                               class="kpi-slider"
+                                               oninput="this.nextElementSibling.textContent = this.value" />
+                                        <span class="kpi-valor">@((int)r.Calificacion)</span>
+                                    </div>
+                                    <input type="text"
+                                           name="Resultados[@Model.Resultados.IndexOf(r)].Observacion"
+                                           class="form-control form-control-sm kpi-obs"
+                                           value="@r.Observacion"
+                                           placeholder="Observación (opcional)" />
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="kpi-empty" id="kpiEmpty">
+                            <i class="fa-solid fa-arrow-up me-2"></i>
+                            Selecciona un empleado y haz clic en "Cargar KPIs"
+                        </div>
+                    }
+                </div>
+
+                <!-- Puntaje total calculado -->
+                <div class="puntaje-total-box" id="puntajeTotalBox" style="display:none">
+                    <span>Puntaje total estimado:</span>
+                    <strong class="monospace" id="puntajeTotalVal">0.00</strong>
+                    <span class="calificacion-label" id="calificacionLabel"></span>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">Comentarios generales</label>
+                <textarea name="Comentarios" class="form-control" rows="2"
+                          placeholder="Observaciones generales sobre el desempeño...">@Model.Comentarios</textarea>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">Plan de mejora</label>
+                <textarea name="PlanMejora" class="form-control" rows="2"
+                          placeholder="Acciones de mejora recomendadas...">@Model.PlanMejora</textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary"
+                onclick="Evaluacion.cerrarModal()">
+            <i class="fa-solid fa-xmark me-1"></i>Cancelar
+        </button>
+        <button type="submit" class="btn btn-eval" id="btnGuardarEval">
+            <i class="fa-solid fa-floppy-disk me-2"></i>Guardar evaluación
+        </button>
+    </div>
+</form>
+
+<script>
+    (function () {
+        document.getElementById('btnCargarKPIs')?.addEventListener('click', async () => {
+            const empId = document.getElementById('selectEmpleadoEval')?.value;
+            if (!empId) { Notify.warning('Selecciona un empleado primero.'); return; }
+
+            try {
+                const res = await fetch(`/Evaluacion/GetKPIsEmpleado?empleadoId=${empId}`);
+                const data = await res.json();
+                if (!data.success || !data.data.length) {
+                    Notify.warning('No hay KPIs configurados para este empleado.');
+                    return;
+                }
+
+                renderKPIs(data.data);
+            } catch { Notify.error('Error al cargar KPIs.'); }
+        });
+
+        function renderKPIs(kpis) {
+            const container = document.getElementById('kpisContainer');
+            let html = '<div class="kpi-list" id="kpiList">';
+
+            kpis.forEach((k, i) => {
+                html += `<div class="kpi-row-item">
+                    <input type="hidden" name="Resultados[${i}].KPIId" value="${k.kpiId}"/>
+                    <div class="kpi-info">
+                        <span class="kpi-nombre">${k.nombreKPI}</span>
+                        <span class="kpi-peso">Peso: ${k.pesoKPI}%</span>
+                    </div>
+                    <div class="kpi-calificacion">
+                        <input type="range" min="0" max="100" step="5" value="0"
+                               name="Resultados[${i}].Calificacion"
+                               class="kpi-slider"
+                               data-peso="${k.pesoKPI}"
+                               oninput="this.nextElementSibling.textContent = this.value; calcularPuntaje()"/>
+                        <span class="kpi-valor">0</span>
+                    </div>
+                    <input type="text" name="Resultados[${i}].Observacion"
+                           class="form-control form-control-sm kpi-obs"
+                           placeholder="Observación (opcional)"/>
+                </div>`;
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
+            document.getElementById('kpiEmpty')?.remove();
+            document.getElementById('puntajeTotalBox').style.display = 'flex';
+            calcularPuntaje();
+        }
+
+        window.calcularPuntaje = function () {
+            const sliders = document.querySelectorAll('.kpi-slider');
+            let total = 0;
+
+            sliders.forEach(s => {
+                const cal   = parseFloat(s.value) || 0;
+                const peso  = parseFloat(s.dataset.peso) || 0;
+                total += (cal * peso / 100);
+            });
+
+            const puntaje = Math.round(total * 100) / 100;
+            document.getElementById('puntajeTotalVal').textContent = puntaje.toFixed(2);
+
+            const label = document.getElementById('calificacionLabel');
+            if (puntaje >= 90)      { label.textContent = 'Excelente';   label.className = 'calificacion-label cal-excelente'; }
+            else if (puntaje >= 75) { label.textContent = 'Muy bueno';   label.className = 'calificacion-label cal-muybueno'; }
+            else if (puntaje >= 60) { label.textContent = 'Bueno';       label.className = 'calificacion-label cal-bueno'; }
+            else if (puntaje >= 45) { label.textContent = 'Regular';     label.className = 'calificacion-label cal-regular'; }
+            else                    { label.textContent = 'Deficiente';  label.className = 'calificacion-label cal-deficiente'; }
+        };
+    })();
+</script>

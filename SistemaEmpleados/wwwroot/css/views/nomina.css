@@ -1,0 +1,703 @@
+﻿/* ══════════════════════════════════════════════
+   SICE — Módulo Nómina / Planilla
+   Color: #C4A35A (dorado)
+══════════════════════════════════════════════ */
+
+:root {
+    --nomina-color: #0d9488;
+    --nomina-dark: #0f766e;
+    --nomina-light: #FFFBEB;
+    --nomina-border: #FDE68A;
+}
+
+/* ── Botón primario ── */
+.btn-nomina {
+    background: var(--nomina-color);
+    color: #fff;
+    border: none;
+    border-radius: 2px;
+    padding: 9px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font-main);
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    line-height: 1.4;
+}
+
+    .btn-nomina:hover {
+        background: var(--nomina-dark);
+        color: #fff;
+    }
+
+    .btn-nomina:active {
+        transform: scale(0.97);
+    }
+
+/* ── Toolbar ── */
+.config-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+/* ── Filtro focus ── */
+.filtro-select:focus {
+    border-color: var(--nomina-color);
+}
+
+/* ── Botones de acción — Más grandes, gorditos, sin fondo y negros ── */
+.btn-action {
+    box-shadow: none !important;
+    border: none !important;
+    background: transparent !important; /* Sin fondo */
+    width: 36px; /* Más anchos */
+    height: 36px; /* Más altos */
+    border-radius: 2px !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px; /* Iconos más gorditos */
+    color: #000000 !important; /* Iconos siempre en negro */
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+    /* Efecto al pasar el cursor (hover) */
+    .btn-action:hover {
+        transform: scale(1.15); /* Solo crece un poquito el icono, no pone fondo */
+        color: #000000 !important;
+    }
+
+    /* Para que se hundan un poquito al hacer clic (opcional) */
+    .btn-action:active {
+        transform: scale(0.95);
+    }
+
+/* ── Modal ── */
+.modal-content {
+    border-radius: 4px !important;
+}
+
+.modal-header-inner {
+    gap: 0 !important;
+}
+
+.modal-footer {
+    border-radius: 0 0 4px 4px !important;
+}
+
+.modal-header-nomina {
+    background: #fff !important;
+    color: var(--color-dark) !important;
+    padding: 16px 20px !important;
+    border-bottom: 1px solid var(--color-border) !important;
+    border-radius: 4px 4px 0 0 !important;
+}
+
+    .modal-header-nomina .modal-title {
+        font-size: 17px !important;
+        font-weight: 600 !important;
+        color: var(--color-dark) !important;
+    }
+
+/* ── Campos de formulario ── */
+.form-control, .form-select {
+    border-radius: var(--border-radius-sm) !important;
+    font-size: 13px;
+    font-family: var(--font-main);
+    border-color: var(--color-border);
+}
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--nomina-color) !important;
+        box-shadow: 0 0 0 3px rgba(196,163,90,0.15) !important;
+    }
+
+/* ── Badges estado planilla ── */
+.badge-nomina-borrador {
+    background: #F1F5F9;
+    color: #475569;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.badge-nomina-procesada {
+    background: #DBEAFE;
+    color: #1E40AF;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.badge-nomina-pagada {
+    background: #D1FAE5;
+    color: #065F46;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.badge-nomina-anulada {
+    background: #FEE2E2;
+    color: #991B1B;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* ── Resumen de planilla ── */
+.nomina-resumen {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--nomina-border);
+    border-bottom: 1px solid var(--nomina-border);
+}
+
+.resumen-item {
+    background: #fff;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+    .resumen-item span {
+        font-size: 12px;
+        color: #64748B;
+    }
+
+    .resumen-item strong {
+        font-size: 20px;
+        color: var(--color-dark);
+    }
+
+    .resumen-item.total {
+        background: var(--nomina-light);
+    }
+
+        .resumen-item.total strong {
+            color: var(--nomina-dark);
+            font-size: 22px;
+        }
+
+
+
+
+
+
+
+/* ══════════════════════════════════════════════
+   KPI CARDS — Resumen anual
+══════════════════════════════════════════════ */
+.nomina-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+    .nomina-kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.nomina-kpi-card {
+    background: #fff;
+    border: 1px solid var(--color-border, #E2E8F0);
+    border-radius: 2px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: box-shadow 0.2s;
+}
+
+    .nomina-kpi-card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+    }
+
+.nomina-kpi-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.nomina-kpi-label {
+    font-size: 11px;
+    color: #64748B;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 4px;
+}
+
+.nomina-kpi-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--color-dark, #1E293B);
+    font-family: var(--font-mono, monospace);
+}
+
+/* ══════════════════════════════════════════════
+   MODAL LOADING
+══════════════════════════════════════════════ */
+.modal-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    color: #64748B;
+}
+
+/* ══════════════════════════════════════════════
+   TABLA HOVER en detalle
+══════════════════════════════════════════════ */
+.table-hover tbody tr:hover {
+    background: #F8FAFC !important;
+}
+
+/* ══════════════════════════════════════════════
+   MODAL HEADER NOMINA — fondo oscuro dorado
+══════════════════════════════════════════════ */
+.modal-header-nomina {
+    background: linear-gradient( 135deg, #C4A35A 0%, #A0803A 100%) !important;
+    color: #fff !important;
+    padding: 16px 20px !important;
+    border-radius: 4px 4px 0 0 !important;
+}
+
+    .modal-header-nomina .modal-title {
+        color: #fff !important;
+        font-size: 16px !important;
+        font-weight: 700 !important;
+    }
+
+    .modal-header-nomina .modal-header-icon {
+        width: 36px;
+        height: 36px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+        font-size: 16px;
+    }
+
+.modal-header-inner {
+    display: flex;
+    align-items: center;
+}
+
+/* ══════════════════════════════════════════════
+   TABS DE SUBMÓDULOS
+══════════════════════════════════════════════ */
+.module-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid #E2E8F0;
+    margin-bottom: 20px;
+}
+
+.module-tab {
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748B;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+    .module-tab:hover {
+        color: var(--nomina-color);
+        
+        border-radius: 6px 6px 0 0;
+    }
+
+    .module-tab.active {
+        color: var(--nomina-color);
+        border-bottom-color: var(--nomina-color);
+        
+    }
+
+/* Contenido de cada tab */
+.tab-content-nomina {
+    display: none;
+}
+
+    .tab-content-nomina.active {
+        display: block;
+    }
+
+/* ══════════════════════════════════════════════
+   BADGE ESTADO PRÉSTAMO
+══════════════════════════════════════════════ */
+.badge-prestamo-activo {
+    background: #D1FAE5;
+    color: #065F46;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.badge-prestamo-completado {
+    background: #DBEAFE;
+    color: #1E40AF;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.badge-prestamo-cancelado {
+    background: #FEE2E2;
+    color: #991B1B;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* ══════════════════════════════════════════════
+   BADGE CONCEPTO TIPO
+══════════════════════════════════════════════ */
+.badge-concepto-devengado {
+    background: #D1FAE5;
+    color: #065F46;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.badge-concepto-deduccion {
+    background: #FEE2E2;
+    color: #991B1B;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* ══════════════════════════════════════════════
+   BADGE SISTEMA (no editable)
+══════════════════════════════════════════════ */
+.badge-sistema {
+    background: #F1F5F9;
+    color: #475569;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+/* ══════════════════════════════════════════════
+   BARRA DE PROGRESO PRÉSTAMO
+══════════════════════════════════════════════ */
+.prestamo-progress {
+    height: 6px;
+    background: #E2E8F0;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 4px;
+    width: 100px;
+}
+
+.prestamo-progress-bar {
+    height: 100%;
+    background: #C4A35A;
+    background: var(--nomina-color);
+    border-radius: 3px;
+    transition: width 0.3s;
+}
+
+
+/* ══════════════════════════════════════════════
+   BOTONES EXPORTAR
+══════════════════════════════════════════════ */
+.btn-export {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    border-radius: 2px;
+    border: 1px solid #E2E8F0;
+    background: #fff;
+    color: #DC2626;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+    .btn-export:hover {
+        background: #FEE2E2;
+        border-color: #DC2626;
+    }
+
+.btn-export-excel {
+    color: #16A34A;
+}
+
+    .btn-export-excel:hover {
+        background: #D1FAE5;
+        border-color: #16A34A;
+    }
+
+
+
+/* ── Forzar bordes redondeados a 2px en tablas de nómina ── */
+.table-card {
+    border-radius: 2px !important;
+    overflow: hidden !important; /* Esencial para que las esquinas de la tabla no se salgan del contenedor */
+    border: 1px solid var(--color-border);
+}
+
+    .table-card table,
+    .table-card .table {
+        border-radius: 2px !important;
+        border-collapse: separate !important; /* DataTables usa 'collapse' por defecto, lo que anula el border-radius */
+        border-spacing: 0;
+    }
+
+        /* Redondear la primera y última celda de las cabeceras */
+        .table-card table thead th:first-child {
+            border-top-left-radius: 2px !important;
+        }
+
+        .table-card table thead th:last-child {
+            border-top-right-radius: 2px !important;
+        }
+
+
+
+/* ══════════════════════════════════════════════
+   MENÚ 3 PUNTOS — Préstamos
+══════════════════════════════════════════════ */
+.prestamo-menu-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.btn-tres-puntos {
+    background: #F1F5F9;
+    color: #475569;
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+    .btn-tres-puntos:hover {
+        background: #E2E8F0;
+        color: #1E293B;
+    }
+
+.prestamo-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 4px);
+    background: #fff;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    min-width: 200px;
+    z-index: 999;
+    padding: 4px;
+    white-space: nowrap;
+}
+
+/* Evitar que el menú de 3 puntos se corte dentro de la tabla */
+#tab-prestamos .table-card,
+#tab-prestamos .table-card .table,
+#tab-prestamos .table-card tbody,
+#tab-prestamos .table-card tr,
+#tab-prestamos .table-card td {
+    overflow: visible !important;
+}
+
+    .prestamo-dropdown.open {
+        display: block;
+    }
+
+    .prestamo-dropdown button {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        padding: 8px 12px;
+        background: none;
+        border: none;
+        border-radius: 6px;
+        font-size: 13px;
+        color: #1E293B;
+        cursor: pointer;
+        text-align: left;
+        transition: background 0.15s;
+    }
+
+        .prestamo-dropdown button:hover {
+            background: #F8FAFC;
+        }
+
+/* Barra de progreso coloreada */
+.prestamo-progress {
+    height: 6px;
+    background: #E2E8F0;
+    border-radius: 3px;
+    overflow: hidden;
+    width: 100px;
+}
+
+.prestamo-progress-bar {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.4s ease;
+}
+
+/* ══════════════════════════════════════════════
+   UNIFICACIÓN DE MODALES (referencia: Vacaciones)
+══════════════════════════════════════════════ */
+#modalEmpleado .modal-content,
+#bsModalGlobal .modal-content {
+    border-radius: 4px !important;
+}
+
+#modalEmpleado .modal-header,
+#bsModalGlobal .modal-header,
+#modalEmpleado .modal-header.modal-header-nomina {
+    background: #fff !important;
+    color: var(--color-dark) !important;
+    padding: 16px 20px !important;
+    border-bottom: 1px solid var(--color-border) !important;
+    border-radius: 4px 4px 0 0 !important;
+}
+
+#modalEmpleado .modal-header .modal-title,
+#bsModalGlobal .modal-title {
+    font-size: 17px !important;
+    font-weight: 600 !important;
+    color: var(--color-dark) !important;
+}
+
+#modalEmpleado .modal-header .modal-header-icon,
+#modalEmpleado .modal-header small {
+    display: none !important;
+}
+
+#modalEmpleado .modal-footer .btn,
+#bsModalGlobal .modal-footer button {
+    min-width: 100px;
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 2px !important;
+}
+
+/* ══════════════════════════════════════════════
+   MODAL ELIMINAR — 2px + tamaño uniforme
+══════════════════════════════════════════════ */
+.sice-delete-popup {
+    border-radius: 2px !important;
+}
+
+.sice-delete-actions {
+    gap: 8px;
+}
+
+.sice-delete-btn {
+    min-width: 120px;
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    border-radius: 2px !important;
+    color: #fff;
+}
+
+.sice-delete-btn-cancel {
+    background: #6B7280;
+}
+
+.sice-delete-btn-confirm {
+    background: #DC2626;
+}
+
+/* ══════════════════════════════════════════════
+   TABLA PLANILLA — ocultar flechas de orden
+══════════════════════════════════════════════ */
+#tablaNomina_wrapper table.dataTable thead .sorting:before,
+#tablaNomina_wrapper table.dataTable thead .sorting:after,
+#tablaNomina_wrapper table.dataTable thead .sorting_asc:before,
+#tablaNomina_wrapper table.dataTable thead .sorting_asc:after,
+#tablaNomina_wrapper table.dataTable thead .sorting_desc:before,
+#tablaNomina_wrapper table.dataTable thead .sorting_desc:after,
+#tablaNomina_wrapper table.dataTable thead .sorting_asc_disabled:before,
+#tablaNomina_wrapper table.dataTable thead .sorting_asc_disabled:after,
+#tablaNomina_wrapper table.dataTable thead .sorting_desc_disabled:before,
+#tablaNomina_wrapper table.dataTable thead .sorting_desc_disabled:after {
+    display: none !important;
+}
+
+#tablaNomina_wrapper table.dataTable thead .dt-column-order {
+    display: none !important;
+}
+
+/* ══════════════════════════════════════════════
+   HEADER TABLA PLANILLA
+══════════════════════════════════════════════ */
+#tablaNomina_wrapper table.dataTable thead > tr > th,
+#tablaNomina_wrapper table.dataTable thead > tr > td,
+#tablaNomina_wrapper table.dataTable thead th .dt-column-title,
+#tab-planillas .table-card table thead th {
+    font-family: var(--font-main) !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    color: #111827 !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+    opacity: 1 !important;
+}
+
+#tablaNomina_wrapper table.dataTable thead th * {
+    font-weight: 800 !important;
+    color: #111827 !important;
+}
+
+
+
+
+
+
+

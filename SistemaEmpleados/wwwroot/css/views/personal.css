@@ -1,0 +1,659 @@
+﻿/* ══════════════════════════════════════════════
+   SICE — Módulo Gestión de Personal
+   Color de módulo: #4A90D9 (azul)
+══════════════════════════════════════════════ */
+:root {
+    --personal-color: #0d9488;
+    --personal-dark: #0f766e;
+    --personal-light: #f0fdfa;
+    --personal-border: #99f6e4;
+}
+
+/* ══════════════════════════════════════════════
+   BOTÓN PRIMARIO DEL MÓDULO
+══════════════════════════════════════════════ */
+.btn-personal {
+    background: var(--personal-color);
+    color: #fff;
+    border: none;
+    border-radius: 2px;
+    padding: 9px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font-main);
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    line-height: 1.4;
+    height: auto;
+}
+
+    .btn-personal:hover {
+        background: var(--personal-dark);
+        color: #fff;
+    }
+
+    .btn-personal:active {
+        transform: scale(0.97);
+    }
+
+/* ══════════════════════════════════════════════
+   TOOLBAR
+══════════════════════════════════════════════ */
+.config-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+/* ── Filtro focus color módulo ── */
+.filtro-select:focus {
+    border-color: var(--personal-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(74, 144, 217, 0.15);
+}
+
+/* ══════════════════════════════════════════════
+   BADGES
+══════════════════════════════════════════════ */
+
+/* Código de empleado */
+.codigo-badge {
+    font-size: 12px;
+    background: var(--personal-light);
+    color: var(--personal-dark);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+}
+
+/* Tipo de contrato */
+.contrato-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: var(--border-radius-pill);
+}
+
+.contrato-indefinido {
+    background: transparent;
+    color: #16a34a;
+    font-weight: 600;
+}
+
+.contrato-temporal {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.contrato-porobra {
+    background: #EDE9FE;
+    color: #5B21B6;
+}
+
+.contrato-prueba {
+    background: #E0F2FE;
+    color: #0369A1;
+}
+
+/* Estado del empleado
+   FIX: estas clases se usan tanto en la lista (renderLista)
+   como en Detalle.cshtml — se unificó la nomenclatura
+   a .estado-badge + .estado-{valor} en ambos lados */
+.estado-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 9px;
+    border-radius: 20px;
+}
+
+.estado-activo {
+    background: #DCFCE7;
+    color: #15803D;
+}
+
+.estado-inactivo {
+    background: #FEF9C3;
+    color: #854D0E;
+}
+
+.estado-suspendido {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.estado-baja {
+    background: #FEE2E2;
+    color: #B91C1C;
+}
+
+/* ══════════════════════════════════════════════
+   BOTONES DE ACCIÓN EN LISTA
+══════════════════════════════════════════════ */
+.btn-action,
+.btn-act-ver,
+.btn-act-editar,
+.btn-act-eliminar {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    width: 30px;
+    height: 25px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    /* 👇 AQUÍ BAJAMOS EL TAMAÑO A 13px (un tamaño más estándar para tablas) */
+    color: #000000 !important;
+    font-size: 13px !important;
+}
+
+    /* ── Quitamos efectos de hover y mantenemos el negro ── */
+    .btn-action:hover,
+    .btn-act-ver:hover,
+    .btn-act-editar:hover,
+    .btn-act-eliminar:hover {
+        background: transparent !important;
+        color: #000000 !important;
+        transform: none !important; /* Asegura que no crezcan ni se muevan */
+    }
+
+    /* 👇 MUY IMPORTANTE: Asegurarnos de que no tengan trazos gruesos (stroke) de clases anteriores */
+    .btn-action i,
+    .btn-act-ver i,
+    .btn-act-editar i,
+    .btn-act-eliminar i {
+        -webkit-text-stroke: 0px transparent !important;
+    }
+
+/* ══════════════════════════════════════════════
+   LISTA DE EMPLEADOS
+══════════════════════════════════════════════ */
+.lista-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.lista-item {
+    display: flex;
+    align-items: center;
+    padding: 14px 20px;
+    border-bottom: 1px solid #f0f2f5;
+    gap: 14px;
+    transition: background 0.15s;
+}
+
+    .lista-item:last-child {
+        border-bottom: none;
+    }
+
+    .lista-item:hover {
+        background: #f9fafb;
+    }
+
+.lista-item-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1e293b;
+    flex-shrink: 0;
+    font-size: 15px;
+}
+
+.lista-item-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.lista-item-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #111827;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 3px;
+    flex-wrap: wrap;
+}
+
+.lista-item-subtitle {
+    font-size: 14px;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+    .lista-item-subtitle span {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .lista-item-subtitle i {
+        font-size: 10px;
+        opacity: 0.7;
+    }
+
+/* Acciones */
+.lista-item-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+/* Estado vacío / carga */
+.lista-empty {
+    padding: 40px;
+    text-align: center;
+    color: #9ca3af;
+    font-size: 14px;
+}
+
+/* ══════════════════════════════════════════════
+   PAGINACIÓN
+══════════════════════════════════════════════ */
+.pagination-bar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 6px;
+    margin-top: 16px;
+    padding: 0 4px;
+}
+
+    .pagination-bar .page-btn {
+        padding: 5px 11px;
+        border: 1px solid #e5e7eb;
+        border-radius: 2px;
+        background: #fff;
+        font-size: 13px;
+        color: #374151;
+        cursor: pointer;
+        transition: background 0.15s, border-color 0.15s;
+        font-family: var(--font-main);
+    }
+
+        .pagination-bar .page-btn:hover {
+            background: #f3f4f6;
+        }
+
+        .pagination-bar .page-btn.active {
+            background: var(--personal-color);
+            color: #fff;
+            border-color: var(--personal-color);
+        }
+
+        .pagination-bar .page-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+/* ══════════════════════════════════════════════
+   MODAL
+   FIX: eliminados los !important que peleaban
+   con Bootstrap. Se usa especificidad mayor
+   (#modalEmpleado .modal-header) en su lugar.
+══════════════════════════════════════════════ */
+.modal-content {
+    border-radius: 4px;
+}
+
+/* Especificidad aumentada — ya no necesita !important */
+#modalEmpleado .modal-header.modal-header-personal {
+    background: #fff;
+    color: var(--color-dark);
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--color-border);
+    border-radius: 4px 4px 0 0;
+}
+
+    #modalEmpleado .modal-header.modal-header-personal .modal-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--color-dark);
+    }
+
+    #modalEmpleado .modal-header.modal-header-personal .btn-close-white {
+        filter: none;
+    }
+
+    /* El ícono y subtitle del header se ocultan
+   (el diseño del módulo no los usa en el modal actual) */
+    #modalEmpleado .modal-header.modal-header-personal .modal-header-icon {
+        display: none;
+    }
+
+    #modalEmpleado .modal-header.modal-header-personal small {
+        display: none;
+    }
+
+.modal-header-inner {
+    gap: 0;
+}
+
+.modal-footer {
+    border-radius: 0 0 4px 4px;
+}
+
+    /* ── Botones del modal footer — mismo tamaño ── */
+    .modal-footer .btn {
+        min-width: 100px;
+        padding: 8px 18px;
+        font-size: 13px;
+        font-weight: 500;
+        border-radius: 2px !important;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+    }
+
+        /* ── Ícono sin margen extra ── */
+        .modal-footer .btn i {
+            margin: 0 !important;
+        }
+
+    /* ── Botón Cancelar — gris sin hover ── */
+    .modal-footer .btn-outline-secondary {
+        background: #6b7280 !important;
+        color: #fff !important;
+        border: none !important;
+    }
+
+        .modal-footer .btn-outline-secondary:hover,
+        .modal-footer .btn-outline-secondary:focus,
+        .modal-footer .btn-outline-secondary:active {
+            background: #6b7280 !important;
+            color: #fff !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+    /* ── Botón Guardar (btn-personal) ── */
+    .modal-footer .btn-personal {
+        min-width: 100px;
+        padding: 8px 18px;
+        border-radius: 2px !important;
+        gap: 4px;
+    }
+/* ══════════════════════════════════════════════
+   PESTAÑAS DEL FORMULARIO
+══════════════════════════════════════════════ */
+.form-tabs {
+    border-bottom: 1px solid var(--color-border);
+    padding: 0 24px;
+    background: #FAFAFA;
+}
+
+    .form-tabs .nav-link {
+        font-size: 13px;
+        font-weight: 500;
+        color: #64748B;
+        border: none;
+        border-bottom: 2px solid transparent;
+        padding: 12px 16px;
+        border-radius: 0;
+        transition: var(--transition);
+    }
+
+        .form-tabs .nav-link.active {
+            color: #111827;
+            border-bottom-color: #111827;
+            background: transparent;
+        }
+
+        .form-tabs .nav-link:hover:not(.active) {
+            color: #111827;
+            background: transparent;
+        }
+
+.form-tab-content {
+    padding: 24px;
+}
+
+.form-section-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #111827;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+}
+
+/* ══════════════════════════════════════════════
+   CAMPOS DE FORMULARIO
+══════════════════════════════════════════════ */
+.form-control,
+.form-select {
+    border-radius: var(--border-radius-sm);
+    font-size: 13px;
+    font-family: var(--font-main);
+    border-color: var(--color-border);
+}
+
+.form-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 4px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--personal-color);
+    box-shadow: 0 0 0 3px rgba(74,144,217);
+}
+
+/* ══════════════════════════════════════════════
+   AVATAR UPLOAD
+══════════════════════════════════════════════ */
+.avatar-upload-area {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.avatar-preview {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--personal-light);
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 3px solid var(--personal-border);
+}
+
+.avatar-initials {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--personal-color);
+}
+
+/* ══════════════════════════════════════════════
+   DETALLE DE EMPLEADO
+══════════════════════════════════════════════ */
+.detalle-body {
+    padding: 24px;
+}
+
+.detalle-avatar-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: 4px;
+}
+
+.detalle-avatar-img {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--personal-border);
+}
+
+.detalle-avatar-initials {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--personal-color), var(--personal-dark));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.detalle-nombre {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 2px;
+    color: var(--color-dark);
+}
+
+.detalle-puesto {
+    font-size: 13px;
+    color: var(--color-text-muted);
+}
+
+.detalle-card {
+    background: #FAFAFA;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    padding: 16px;
+    height: 100%;
+}
+
+.detalle-card-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--personal-color);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--personal-border);
+}
+
+.detalle-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    padding: 5px 0;
+    border-bottom: 1px solid #F1F5F9;
+}
+
+    .detalle-item span {
+        color: #64748B;
+    }
+
+    .detalle-item strong {
+        color: var(--color-dark);
+        font-weight: 600;
+    }
+
+
+
+/* ══════════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════════ */
+@media (max-width: 768px) {
+    .detalle-avatar-section {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .lista-item-subtitle {
+        gap: 8px;
+    }
+
+    .config-toolbar {
+        flex-wrap: wrap;
+    }
+}
+
+/* ══════════════════════════════════════════════
+   UNIFICACIÓN DE MODALES (referencia: Vacaciones)
+══════════════════════════════════════════════ */
+#modalEmpleado .modal-content {
+    border-radius: 4px !important;
+}
+
+#modalEmpleado .modal-header,
+#modalEmpleado .modal-header.modal-header-personal {
+    background: #fff !important;
+    color: var(--color-dark) !important;
+    padding: 16px 20px !important;
+    border-bottom: 1px solid var(--color-border) !important;
+    border-radius: 4px 4px 0 0 !important;
+}
+
+#modalEmpleado .modal-header .modal-title {
+    font-size: 17px !important;
+    font-weight: 600 !important;
+    color: var(--color-dark) !important;
+}
+
+#modalEmpleado .modal-header .modal-header-icon,
+#modalEmpleado .modal-header small {
+    display: none !important;
+}
+
+#modalEmpleado .modal-footer .btn {
+    min-width: 100px;
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 2px !important;
+}
+
+/* ══════════════════════════════════════════════
+   MODAL ELIMINAR — 2px + tamaño uniforme
+══════════════════════════════════════════════ */
+.sice-delete-popup {
+    border-radius: 2px !important;
+}
+
+.sice-delete-actions {
+    gap: 8px;
+}
+
+.sice-delete-btn {
+    min-width: 120px;
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    border-radius: 2px !important;
+    color: #fff;
+}
+
+.sice-delete-btn-cancel {
+    background: #6B7280;
+}
+
+.sice-delete-btn-confirm {
+    background: #DC2626;
+}

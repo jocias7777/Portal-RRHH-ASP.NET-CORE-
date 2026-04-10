@@ -1,0 +1,72 @@
+﻿@model SistemaEmpleados.Models.ViewModels.AusenciaViewModel
+
+<div class="modal-header modal-header-vacaciones">
+    <div class="modal-header-inner">
+        <div>
+            <h5 class="modal-title">Registrar Ausencia</h5>
+            <small>Ausencias justificadas e injustificadas</small>
+        </div>
+    </div>
+    <button type="button" class="btn-close" onclick="Vacaciones.cerrarModal()"></button>
+</div>
+
+<form id="formAusencia" novalidate>
+    @Html.AntiForgeryToken()
+    <div class="modal-body">
+        <div class="row g-3">
+            <div class="col-12">
+                <label class="form-label required-field">Empleado</label>
+                <select name="EmpleadoId" class="form-select" required>
+                    <option value="">— Seleccionar —</option>
+                    @if (ViewBag.Empleados != null)
+                    {
+                        foreach (var e in ViewBag.Empleados)
+                        {
+                            <option value="@e.Id">@e.Nombre</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Tipo de ausencia</label>
+                <select name="Tipo" class="form-select">
+                    @foreach (var t in Enum.GetValues<SistemaEmpleados.Models.Entities.TipoAusencia>())
+                    {
+                        <option value="@((int)t)">@t</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">¿Justificada?</label>
+                <select name="Justificada" class="form-select">
+                    <option value="false">No justificada</option>
+                    <option value="true">Justificada</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label required-field">Fecha inicio</label>
+                <input type="date" name="FechaInicio" class="form-control"
+                       value="@Model.FechaInicio.ToString("yyyy-MM-dd")" required />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label required-field">Fecha fin</label>
+                <input type="date" name="FechaFin" class="form-control"
+                       value="@Model.FechaFin.ToString("yyyy-MM-dd")" required />
+            </div>
+            <div class="col-12">
+                <label class="form-label">Observación</label>
+                <textarea name="Observacion" class="form-control" rows="2"
+                          placeholder="Motivo o notas..."></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary"
+                onclick="Vacaciones.cerrarModal()">
+            <i class="fa-solid fa-arrow-left m-2"></i>Cancelar
+        </button>
+        <button type="submit" class="btn btn-vacaciones" id="btnGuardarAusencia">
+            <i class="fa-solid fa-check me-2"></i>Guardar
+        </button>
+    </div>
+</form>

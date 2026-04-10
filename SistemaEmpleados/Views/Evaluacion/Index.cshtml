@@ -1,0 +1,84 @@
+﻿@{
+    ViewData["Title"] = "Evaluación de Desempeño";
+    Layout = "_Layout";
+}
+
+@section HeadStyles {
+    <link rel="stylesheet" href="~/css/views/evaluacion.css" asp-append-version="true" />
+}
+
+<div class="module-page animate__animated animate__fadeIn">
+
+    <div class="module-header">
+        <div class="module-header-left">
+            <div>
+                <h1 class="module-title">Evaluación de Desempeño</h1>
+                <p class="module-subtitle">KPIs, evaluaciones 90°/180°/360° y planes de mejora</p>
+            </div>
+        </div>
+        @if (User.IsInRole("SuperAdmin") || User.IsInRole("RRHH"))
+        {
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-eval" id="btnGestionarKPIs">
+                    <i class="fa-solid fa-sliders me-2"></i>Gestionar KPIs
+                </button>
+                <button class="btn btn-eval" id="btnNuevaEvaluacion">
+                    <i class="fa-solid fa-plus me-2"></i>Nueva Evaluación
+                </button>
+            </div>
+        }
+    </div>
+
+    <!-- Filtros -->
+    <div class="filtros-bar">
+        <div class="filtro-group">
+            <label class="filtro-label">Departamento</label>
+            <select id="filtroDeptoEval" class="filtro-select">
+                <option value="">Todos</option>
+            </select>
+        </div>
+        <div class="filtro-group">
+            <label class="filtro-label">Estado</label>
+            <select id="filtroEstadoEval" class="filtro-select">
+                <option value="">Todos</option>
+                <option value="Pendiente">Pendiente</option>
+                <option value="EnProceso">En proceso</option>
+                <option value="Completada">Completada</option>
+                <option value="Cancelada">Cancelada</option>
+            </select>
+        </div>
+        <button class="btn btn-outline-secondary btn-sm" id="btnLimpiarEval">
+            <i class="fa-solid fa-rotate-left me-1"></i>Limpiar
+        </button>
+        <div class="ms-auto">
+            <span class="badge-count" id="totalEvaluaciones">— evaluaciones</span>
+        </div>
+    </div>
+
+    <!-- Tabla -->
+    <div class="table-card">
+        <table id="tablaEvaluacion" class="table w-100">
+            <thead>
+                <tr>
+                    <th width="44">#</th>
+                    <th>Empleado</th>
+                    <th>Departamento</th>
+                    <th>Puesto</th>
+                    <th width="120">Período</th>
+                    <th width="70">Tipo</th>
+                    <th width="100">Puntaje</th>
+                    <th width="110">Calificación</th>
+                    <th width="110">Estado</th>
+                    <th width="110">Fecha</th>
+                    <th width="100" class="text-center">Acciones</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+@Html.AntiForgeryToken()
+
+@section Scripts {
+    <script src="~/js/modules/evaluacion.js" asp-append-version="true"></script>
+}

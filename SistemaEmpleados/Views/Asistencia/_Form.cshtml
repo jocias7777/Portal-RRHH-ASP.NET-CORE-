@@ -1,0 +1,143 @@
+﻿@model SistemaEmpleados.Models.ViewModels.AsistenciaViewModel
+
+@{
+    var esEdicion = Model.Id > 0;
+    var titulo = esEdicion ? "Editar Asistencia" : "Registrar Asistencia";
+}
+
+<div class="modal-header modal-header-asistencia">
+    <div class="modal-header-inner">
+        <div class="modal-header-icon">
+            <i class="fa-solid fa-@(esEdicion ? "pen-to-square" : "clock")"></i>
+        </div>
+        <div>
+            <h5 class="modal-title">@titulo</h5>
+            <small class="text-white-50">
+                @(esEdicion ? $"Editando registro #{Model.Id}" : "Nuevo registro de asistencia")
+            </small>
+        </div>
+    </div>
+    <button type="button" class="btn-close btn-close-white"
+            onclick="Asistencia.cerrarModal()"></button>
+</div>
+
+<form id="formAsistencia" novalidate>
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="Id" value="@Model.Id" />
+
+    <div class="modal-body">
+        <div class="row g-3">
+
+            <!-- Empleado -->
+            <div class="col-md-6">
+                <label class="form-label required-field">Empleado</label>
+                <select name="EmpleadoId" class="form-select" required>
+                    <option value="">— Seleccionar —</option>
+                    @if (ViewBag.Empleados != null)
+                    {
+                        foreach (var e in ViewBag.Empleados)
+                        {
+                            <option value="@e.Id" selected="@(Model.EmpleadoId == e.Id)">
+                                @e.Nombre
+                            </option>
+                        }
+                    }
+                </select>
+                <div class="invalid-feedback"></div>
+            </div>
+
+            <!-- Horario -->
+            <div class="col-md-6">
+                <label class="form-label">Horario</label>
+                <select name="HorarioId" class="form-select">
+                    <option value="">— Sin horario asignado —</option>
+                    @if (ViewBag.Horarios != null)
+                    {
+                        foreach (var h in ViewBag.Horarios)
+                        {
+                            <option value="@h.Id" selected="@(Model.HorarioId == h.Id)">
+                                @h.Nombre
+                            </option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <!-- Fecha -->
+            <div class="col-md-4">
+                <label class="form-label required-field">Fecha</label>
+                <input type="date" name="Fecha" class="form-control"
+                       value="@Model.Fecha.ToString("yyyy-MM-dd")" required />
+                <div class="invalid-feedback"></div>
+            </div>
+
+            <!-- Hora Entrada -->
+            <div class="col-md-4">
+                <label class="form-label">Hora de entrada</label>
+                <input type="time" name="HoraEntrada" class="form-control"
+                       value="@Model.HoraEntrada" />
+            </div>
+
+            <!-- Hora Salida -->
+            <div class="col-md-4">
+                <label class="form-label">Hora de salida</label>
+                <input type="time" name="HoraSalida" class="form-control"
+                       value="@Model.HoraSalida" />
+            </div>
+
+            <!-- Horas Extra -->
+            <div class="col-md-4">
+                <label class="form-label">Horas extra</label>
+                <input type="number" name="HorasExtra" class="form-control"
+                       value="@Model.HorasExtra" min="0" max="24" step="0.5" />
+            </div>
+
+            <!-- Minutos Atraso -->
+            <div class="col-md-4">
+                <label class="form-label">Minutos de atraso</label>
+                <input type="number" name="MinutosAtraso" class="form-control"
+                       value="@Model.MinutosAtraso" min="0" max="999" />
+            </div>
+
+            <!-- Método -->
+            <div class="col-md-4">
+                <label class="form-label">Método de marcaje</label>
+                <select name="Metodo" class="form-select">
+                    @foreach (var m in Enum.GetValues<SistemaEmpleados.Models.Entities.MetodoMarcaje>())
+                    {
+                        <option value="@((int)m)" selected="@(Model.Metodo == m)">@m</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Estado -->
+            <div class="col-md-6">
+                <label class="form-label">Estado</label>
+                <select name="Estado" class="form-select">
+                    @foreach (var s in Enum.GetValues<SistemaEmpleados.Models.Entities.EstadoAsistencia>())
+                    {
+                        <option value="@((int)s)" selected="@(Model.Estado == s)">@s</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Observación -->
+            <div class="col-12">
+                <label class="form-label">Observación</label>
+                <textarea name="Observacion" class="form-control" rows="2"
+                          placeholder="Notas adicionales...">@Model.Observacion</textarea>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary"
+                onclick="Asistencia.cerrarModal()">
+            <i class="fa-solid fa-xmark me-1"></i>Cancelar
+        </button>
+        <button type="submit" class="btn btn-asistencia" id="btnGuardarAsistencia">
+            <i class="fa-solid fa-floppy-disk me-2"></i>Guardar
+        </button>
+    </div>
+</form>

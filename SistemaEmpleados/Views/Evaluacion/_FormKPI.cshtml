@@ -1,0 +1,87 @@
+﻿@model SistemaEmpleados.Models.ViewModels.KPIViewModel
+
+@{
+    var esEdicion = Model.Id > 0;
+}
+
+<div class="modal-header modal-header-eval">
+    <div class="modal-header-inner">
+        <div class="modal-header-icon">
+            <i class="fa-solid fa-sliders"></i>
+        </div>
+        <div>
+            <h5 class="modal-title">@(esEdicion ? "Editar KPI" : "Nuevo KPI")</h5>
+            <small class="text-white-50">Indicador clave de desempeño</small>
+        </div>
+    </div>
+    <button type="button" class="btn-close btn-close-white"
+            onclick="Evaluacion.cerrarModal()"></button>
+</div>
+
+<form id="formKPI" novalidate>
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="Id" value="@Model.Id" />
+
+    <div class="modal-body">
+        <div class="row g-3">
+
+            <div class="col-12">
+                <label class="form-label required-field">Nombre del KPI</label>
+                <input type="text" name="Nombre" class="form-control"
+                       value="@Model.Nombre"
+                       placeholder="Ej. Cumplimiento de objetivos" required />
+                <div class="invalid-feedback"></div>
+            </div>
+
+            <div class="col-md-8">
+                <label class="form-label">Descripción</label>
+                <textarea name="Descripcion" class="form-control" rows="2"
+                          placeholder="¿Qué mide este indicador?">@Model.Descripcion</textarea>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label required-field">Peso (%)</label>
+                <div class="input-group">
+                    <input type="number" name="Peso" class="form-control"
+                           value="@Model.Peso" min="0.01" max="100" step="0.01" required />
+                    <span class="input-group-text">%</span>
+                </div>
+                <small class="text-muted">La suma de todos los KPIs debe ser 100%</small>
+                <div class="invalid-feedback"></div>
+            </div>
+
+            <div class="col-md-8">
+                <label class="form-label">Aplica al puesto</label>
+                <select name="PuestoId" class="form-select">
+                    <option value="">— General (aplica a todos) —</option>
+                    @if (ViewBag.Puestos != null)
+                    {
+                        foreach (var p in ViewBag.Puestos)
+                        {
+                            <option value="@p.Id" selected="@(Model.PuestoId == p.Id)">@p.Nombre</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Activo</label>
+                <div class="form-check form-switch mt-2">
+                    <input type="checkbox" name="Activo" class="form-check-input"
+                           id="kpiActivo" @(Model.Activo ? "checked" : "") value="true" />
+                    <label class="form-check-label" for="kpiActivo">KPI activo</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary"
+                onclick="Evaluacion.cerrarModal()">
+            <i class="fa-solid fa-xmark me-1"></i>Cancelar
+        </button>
+        <button type="submit" class="btn btn-eval" id="btnGuardarKPI">
+            <i class="fa-solid fa-floppy-disk me-2"></i>Guardar KPI
+        </button>
+    </div>
+</form>

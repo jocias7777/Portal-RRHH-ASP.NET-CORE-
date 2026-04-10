@@ -1,0 +1,167 @@
+﻿@model SistemaEmpleados.Models.ViewModels.PrestacionViewModel
+
+@{
+    var esEdicion = Model.Id > 0;
+}
+
+<div class="modal-header modal-header-prestaciones">
+    <div class="modal-header-inner">
+        <div class="modal-header-icon">
+            <i class="fa-solid fa-hand-holding-dollar"></i>
+        </div>
+        <div>
+            <h5 class="modal-title">
+                @(esEdicion ? "Editar Prestación" : "Nueva Prestación Laboral")
+            </h5>
+            <small class="text-white-50">Cálculo automático según ley guatemalteca</small>
+        </div>
+    </div>
+    <button type="button" class="btn-close btn-close-white"
+            onclick="Prestaciones.cerrarModal()"></button>
+</div>
+
+<form id="formPrestacion" novalidate>
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="Id" value="@Model.Id" />
+
+    <div class="modal-body">
+        <div class="row g-3">
+
+            <div class="col-md-8">
+                <label class="form-label required-field">Empleado</label>
+                <select name="EmpleadoId" id="selectEmpleadoPrest"
+                        class="form-select" required>
+                    <option value="">— Seleccionar —</option>
+                    @if (ViewBag.Empleados != null)
+                    {
+                        foreach (var e in ViewBag.Empleados)
+                        {
+                            <option value="@e.Id" selected="@(Model.EmpleadoId == e.Id)">
+                                @e.Nombre
+                            </option>
+                        }
+                    }
+                </select>
+                <div class="invalid-feedback"></div>
+
+                <!-- ESTO AGREGUÉ: contenedor de información del empleado -->
+                <div id="empleadoInfoBox" style="display:none;margin-top:8px"></div>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">
+                    <button type="button" class="btn btn-sm btn-outline-prestaciones float-end"
+                            id="btnCalcularPrest">
+                        <i class="fa-solid fa-calculator me-1"></i>Calcular
+                    </button>
+                    Tipo
+                </label>
+                <select name="Tipo" class="form-select">
+                    @foreach (var t in Enum.GetValues<SistemaEmpleados.Models.Entities.TipoPrestacion>())
+                    {
+                        <option value="@((int)t)" selected="@(Model.Tipo == t)">@t</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Resultado del cálculo automático -->
+            <div class="col-12" id="calculoBox" style="display:none">
+                <div class="calculo-prestacion-card">
+                    <div class="calculo-header">
+                        <i class="fa-solid fa-calculator me-2"></i>
+                        Cálculo automático — <span id="calcNombre"></span>
+                    </div>
+                    <div class="calculo-grid">
+                        <div class="calculo-item-prest">
+                            <span>Salario base</span>
+                            <strong class="monospace" id="calcSalario">Q 0.00</strong>
+                        </div>
+                        <div class="calculo-item-prest">
+                            <span>Meses trabajados</span>
+                            <strong class="monospace" id="calcMeses">0</strong>
+                        </div>
+                        <div class="calculo-item-prest">
+                            <span>Aguinaldo</span>
+                            <strong class="monospace" id="calcAguinaldo">Q 0.00</strong>
+                        </div>
+                        <div class="calculo-item-prest">
+                            <span>Bono 14</span>
+                            <strong class="monospace" id="calcBono14">Q 0.00</strong>
+                        </div>
+                        <div class="calculo-item-prest">
+                            <span>Indemnización</span>
+                            <strong class="monospace" id="calcIndem">Q 0.00</strong>
+                        </div>
+                        <div class="calculo-item-prest total">
+                            <span>Total finiquito</span>
+                            <strong class="monospace" id="calcTotal">Q 0.00</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label required-field">Período (año)</label>
+                <input type="number" name="Periodo" class="form-control"
+                       value="@Model.Periodo" min="2000" max="2099" required />
+                <div class="invalid-feedback"></div>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Meses trabajados</label>
+                <input type="number" name="MesesTrabajados" id="inputMeses"
+                       class="form-control"
+                       value="@Model.MesesTrabajados" min="0" max="12" />
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Salario base (Q)</label>
+                <input type="number" name="SalarioBase" id="inputSalario"
+                       class="form-control"
+                       value="@Model.SalarioBase" min="0" step="0.01" />
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label required-field">Monto (Q)</label>
+                <input type="number" name="Monto" id="inputMonto"
+                       class="form-control"
+                       value="@Model.Monto" min="0" step="0.01" required />
+                <div class="invalid-feedback"></div>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Estado</label>
+                <select name="Estado" class="form-select">
+                    @foreach (var s in Enum.GetValues<SistemaEmpleados.Models.Entities.EstadoPrestacion>())
+                    {
+                        <option value="@((int)s)" selected="@(Model.Estado == s)">@s</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Fecha de pago</label>
+                <input type="date" name="FechaPago" class="form-control"
+                       value="@Model.FechaPago?.ToString("yyyy-MM-dd")" />
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">Observación</label>
+                <textarea name="Observacion" class="form-control" rows="2"
+                          placeholder="Notas adicionales...">@Model.Observacion</textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary"
+                onclick="Prestaciones.cerrarModal()">
+            <i class="fa-solid fa-arrow-left me-2"></i>Cancelar
+        </button>
+        <button type="submit" class="btn btn-prestaciones" id="btnGuardarPrest">
+            <i class="fa-solid fa-check me-2"></i>Guardar
+        </button>
+    </div>
+</form>
+
+@* La lógica JS del autocalculo del modal se inicializa desde `wwwroot/js/modules/prestaciones.js` al abrir el formulario. *@

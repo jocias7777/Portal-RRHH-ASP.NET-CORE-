@@ -1,0 +1,315 @@
+﻿@{
+    ViewData["Title"] = "Nómina";
+    Layout = "_Layout";
+}
+@section HeadStyles {
+    <link rel="stylesheet"
+          href="~/css/views/nomina.css" asp-append-version="true" />
+}
+
+<div class="module-page animate__animated animate__fadeIn">
+
+    <!-- ── HEADER ── -->
+    <div class="module-header">
+        <div class="module-header-left">
+            <div>
+                <h1 class="module-title">Nómina</h1>
+ 
+            </div>
+        </div>
+        <div class="module-header-right"
+             style="display:flex;align-items:center;gap:10px">
+            <select id="selectAnioResumen"
+                    class="filtro-select" style="width:100px">
+                @for (int y = DateTime.Now.Year; y >= DateTime.Now.Year - 3; y--)
+                {
+                    <option value="@y"
+                            selected="@(y == DateTime.Now.Year)">@y</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <!-- ── KPI CARDS ── -->
+    <div class="nomina-kpi-grid">
+        <div class="nomina-kpi-card">
+            <div class="nomina-kpi-icon" style="background: transparent;">
+                <i class="fa-solid fa-file-invoice-dollar" style="color: #000000;"></i>
+            </div>
+            <div>
+                <div class="nomina-kpi-label">Planillas del año</div>
+                <div class="nomina-kpi-value" id="kpiTotalPlanillas">—</div>
+            </div>
+        </div>
+        <div class="nomina-kpi-card">
+            <div class="nomina-kpi-icon" style="background: transparent;">
+                <i class="fa-solid fa-money-bill-wave" style="color: #000000;"></i>
+            </div>
+            <div>
+                <div class="nomina-kpi-label">Total pagado</div>
+                <div class="nomina-kpi-value" id="kpiTotalPagado">—</div>
+            </div>
+        </div>
+        <div class="nomina-kpi-card">
+            <div class="nomina-kpi-icon" style="background: transparent;">
+                <i class="fa-solid fa-coins" style="color: #000000;"></i>
+            </div>
+            <div>
+                <div class="nomina-kpi-label">Total devengado</div>
+                <div class="nomina-kpi-value" id="kpiTotalDevengado">—</div>
+            </div>
+        </div>
+        <div class="nomina-kpi-card">
+            <div class="nomina-kpi-icon" style="background: transparent;">
+                <i class="fa-solid fa-arrow-trend-down" style="color: #000000;"></i>
+            </div>
+            <div>
+                <div class="nomina-kpi-label">Total deducciones</div>
+                <div class="nomina-kpi-value" id="kpiTotalDeducciones">—</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── TABS DE SUBMÓDULOS ── -->
+    <div class="module-tabs">
+        <button class="module-tab active"
+                data-tab="planillas" onclick="NominaTabs.show('planillas')">
+            <i></i>Planillas
+        </button>
+        <button class="module-tab"
+                data-tab="salarios" onclick="NominaTabs.show('salarios')">
+            <i></i>Salarios
+        </button>
+        <button class="module-tab"
+                data-tab="prestamos" onclick="NominaTabs.show('prestamos')">
+            <i></i>Préstamos
+        </button>
+        <button class="module-tab"
+                data-tab="conceptos" onclick="NominaTabs.show('conceptos')">
+            <i></i>Conceptos
+        </button>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         TAB 1 — PLANILLAS
+    ══════════════════════════════════════ -->
+    <div id="tab-planillas" class="tab-content-nomina active">
+        <div class="config-toolbar">
+            @if (User.IsInRole("SuperAdmin") || User.IsInRole("RRHH"))
+            {
+                <button class="btn btn-nomina" id="btnGenerarPlanilla">
+                    <i></i>
+                    Generar planilla
+                </button>
+            }
+            <select id="filtroEstadoNomina" class="filtro-select">
+                <option value="">Todos los estados</option>
+                <option value="Borrador">Borrador</option>
+                <option value="Procesada">Procesada</option>
+                <option value="Pagada">Pagada</option>
+                <option value="Anulada">Anulada</option>
+            </select>
+            <button class="btn btn-outline-secondary btn-sm"
+                    id="btnLimpiarNomina">
+                <i class="fa-solid fa-rotate-left me-1"></i>
+            </button>
+            <button class="btn-export" id="btnPdfPlanillas"
+                    title="Exportar PDF">
+                <i class="fa-solid fa-file-pdf"></i> PDF
+            </button>
+            <button class="btn-export btn-export-excel"
+                    id="btnExcelPlanillas"
+                    title="Exportar Excel">
+                <i class="fa-solid fa-file-excel"></i> Excel
+            </button>
+            <div class="ms-auto">
+                <span class="badge-count"
+                      id="totalPlanillas">— planillas</span>
+            </div>
+        </div>
+        <div class="table-card">
+            <table id="tablaNomina" class="table w-100">
+                <thead>
+                    <tr>
+                        <th width="44">#</th>
+                        <th width="160">Período</th>
+                        <th width="100">Empleados</th>
+                        <th width="150">Total devengado</th>
+                        <th width="150">Total deducciones</th>
+                        <th width="150">Total neto</th>
+                        <th width="110">Estado</th>
+                        <th width="110">Generado</th>
+                        <th width="110">Pagado</th>
+                        <th width="120" class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         TAB 2 — SALARIOS
+    ══════════════════════════════════════ -->
+    <div id="tab-salarios" class="tab-content-nomina">
+        <div class="config-toolbar">
+            <select id="filtroDeptoSalarios" class="filtro-select">
+                <option value="">Todos los departamentos</option>
+            </select>
+            <input type="text" id="buscarEmpleadoSalario"
+                   class="filtro-select" style="width:220px"
+                   placeholder="Buscar empleado...">
+
+            <button class="btn-export" id="btnPdfSalarios"
+                    title="Exportar PDF">
+                <i class="fa-solid fa-file-pdf"></i> PDF
+            </button>
+            <button class="btn-export btn-export-excel"
+                    id="btnExcelSalarios"
+                    title="Exportar Excel">
+                <i class="fa-solid fa-file-excel"></i> Excel
+            </button>
+            <div class="ms-auto">
+                <span class="badge-count"
+                      id="totalSalarios">— empleados
+                  </span>
+            </div>
+        </div>
+        <div class="table-card">
+            <table id="tablaSalarios" class="table w-100">
+                <thead>
+                    <tr>
+                        <th width="44">#</th>
+                        <th>Empleado</th>
+                        <th width="150">Departamento</th>
+                        <th width="130">Puesto</th>
+                        <th width="140">Salario actual</th>
+                        <th width="140">Rango del puesto</th>
+                        <th width="110">Último cambio</th>
+                        <th width="100" class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="bodySalarios"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         TAB 3 — PRÉSTAMOS
+    ══════════════════════════════════════ -->
+    <div id="tab-prestamos" class="tab-content-nomina">
+        <div class="config-toolbar">
+            @if (User.IsInRole("SuperAdmin") || User.IsInRole("RRHH"))
+            {
+                <button class="btn btn-nomina"
+                        id="btnNuevoPrestamo">
+                    <i></i>
+                    Nuevo 
+                </button>
+            }
+            <select id="filtroEstadoPrestamo" class="filtro-select">
+                <option value="">Todos los estados</option>
+                <option value="Activo">Activo</option>
+                <option value="Completado">Completado</option>
+                <option value="Cancelado">Cancelado</option>
+            </select>
+            <button class="btn-export" id="btnPdfPrestamos"
+                    title="Exportar PDF">
+                <i class="fa-solid fa-file-pdf"></i> PDF
+            </button>
+            <button class="btn-export btn-export-excel"
+                    id="btnExcelPrestamos"
+                    title="Exportar Excel">
+                <i class="fa-solid fa-file-excel"></i> Excel
+            </button>
+            <div class="ms-auto">
+                <span class="badge-count"
+                      id="totalPrestamos">— préstamos</span>
+            </div>
+        </div>
+        <div class="table-card">
+            <table id="tablaPrestamos" class="table w-100">
+                <thead>
+                    <tr>
+                        <th width="44">#</th>
+                        <th>Empleado</th>
+                        <th width="130">Monto total</th>
+                        <th width="120">Cuota mensual</th>
+                        <th width="100">Cuotas</th>
+                        <th width="130">Saldo pendiente</th>
+                        <th width="110">Estado</th>
+                        <th width="110">Fecha inicio</th>
+                        <th width="100" class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="bodyPrestamos"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         TAB 4 — CONCEPTOS DE NÓMINA
+    ══════════════════════════════════════ -->
+    <div id="tab-conceptos" class="tab-content-nomina">
+        <div class="config-toolbar">
+            @if (User.IsInRole("SuperAdmin") || User.IsInRole("RRHH"))
+            {
+                <button class="btn btn-nomina"
+                        id="btnNuevoConcepto">
+                    <i></i>
+                    Nuevo 
+                </button>
+            }
+            <select id="filtroTipoConcepto" class="filtro-select">
+                <option value="">Todos los tipos</option>
+                <option value="Devengado">Devengados</option>
+                <option value="Deduccion">Deducciones</option>
+            </select>
+          
+            <div class="ms-auto">
+                <span class="badge-count"
+                      id="totalConceptos">— conceptos</span>
+            </div>
+        </div>
+        <div class="table-card">
+            <table id="tablaConceptos" class="table w-100">
+                <thead>
+                    <tr>
+                        <th width="44">#</th>
+                        <th width="100">Código</th>
+                        <th>Nombre</th>
+                        <th width="110">Tipo</th>
+                        <th width="120">Aplicación</th>
+                        <th width="100">Valor</th>
+                        <th width="90">Obligatorio</th>
+                        <th width="80">Estado</th>
+                        <th width="100" class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="bodyConceptos"></tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+@Html.AntiForgeryToken()
+
+@section Scripts {
+    <script src="~/js/modules/nomina.js"
+            asp-append-version="true"></script>
+}
+<script>
+    (function () {
+        if (typeof jQuery !== 'undefined'
+            && typeof jQuery.fn.DataTable !== 'undefined') {
+            if (typeof Nomina !== 'undefined') {
+                Nomina.init();
+            } else {
+                var s = document.createElement('script');
+                s.src = '/js/modules/nomina.js';
+                s.onload = function () { Nomina.init(); };
+                document.body.appendChild(s);
+            }
+        }
+    })();
+</script>

@@ -1,0 +1,116 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var hora = DateTime.Now.Hour;
+    var saludo = hora < 12 ? "Buenos días" : hora < 18 ? "Buenas tardes" : "Buenas noches";
+}
+
+@section HeadStyles {
+    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+}
+
+<div class="dashboard-wrapper">
+
+    <!-- Header con buscador centrado -->
+    <div class="dashboard-header-center">
+        <h1 class="greeting-text">
+            @saludo <span class="greeting-name">@ViewBag.UserName</span>
+        </h1>
+        <p class="greeting-date">
+            @DateTime.Now.ToString("dddd, dd 'de' MMMM 'de' yyyy",
+            new System.Globalization.CultureInfo("es-GT"))
+        </p>
+
+        <!-- Buscador grande centrado -->
+        <div class="dashboard-search-center">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="dashboardSearch"
+                   placeholder="Buscar módulo..." />
+        </div>
+    </div>
+
+    <!-- Grid de Módulos -->
+    <div class="modules-grid" id="modulesGrid">
+        @{
+            var userRole = ViewBag.UserRole as string ?? "";
+            var modulos = new[]
+            {
+                new { Icon="fa-id-badge",            Nombre="Personal",        Desc="Gestión de empleados y contratos",    Url="/Personal/Index",      Roles="SuperAdmin,RRHH,Gerente",          Delay=".05s" },
+                new { Icon="fa-clock",               Nombre="Asistencia",      Desc="Horarios, turnos y marcajes",         Url="/Asistencia/Index",    Roles="SuperAdmin,RRHH,Gerente",          Delay=".10s" },
+                new { Icon="fa-file-invoice-dollar", Nombre="Nómina",          Desc="Planillas, devengados y deducciones", Url="/Nomina/Index",        Roles="SuperAdmin,RRHH,Gerente",          Delay=".15s" },
+                new { Icon="fa-umbrella-beach",      Nombre="Vacaciones",      Desc="Solicitudes y saldos de vacaciones",  Url="/Vacaciones/Index",    Roles="SuperAdmin,RRHH,Gerente,Empleado", Delay=".20s" },
+                new { Icon="fa-hand-holding-dollar", Nombre="Prestaciones",    Desc="Aguinaldo, bono 14, indemnizaciones", Url="/Prestaciones/Index",  Roles="SuperAdmin,RRHH,Gerente",          Delay=".25s" },
+                new { Icon="fa-user-plus",           Nombre="Reclutamiento",   Desc="Plazas vacantes y candidatos",        Url="/Reclutamiento/Index", Roles="SuperAdmin,RRHH",                  Delay=".30s" },
+                new { Icon="fa-star",                Nombre="Evaluación",      Desc="Desempeño, KPIs y planes de mejora",  Url="/Evaluacion/Index",    Roles="SuperAdmin,RRHH,Gerente",          Delay=".35s" },
+                new { Icon="fa-graduation-cap",      Nombre="Capacitación",    Desc="Cursos, INTECAP y certificados",      Url="/Capacitacion/Index",  Roles="SuperAdmin,RRHH",                  Delay=".40s" },
+                new { Icon="fa-sitemap",             Nombre="Organigrama",     Desc="Estructura organizacional",           Url="/Organigrama/Index",   Roles="SuperAdmin,RRHH,Gerente",          Delay=".45s" },
+                new { Icon="fa-folder-open",         Nombre="Documentos",      Desc="Constancias, contratos y cartas",     Url="/Documentos/Index",    Roles="SuperAdmin,RRHH",                  Delay=".50s" },
+                new { Icon="fa-circle-user",         Nombre="Portal Empleado", Desc="Boletas, solicitudes y mis datos",    Url="/Portal/Index",        Roles="Empleado",                         Delay=".55s" },
+                new { Icon="fa-chart-bar",           Nombre="Reportes",        Desc="IGSS, ISR, auditoría y cumplimiento", Url="/Reportes/Index",      Roles="SuperAdmin,RRHH,Gerente",          Delay=".60s" },
+                };
+        }
+
+        @foreach (var mod in modulos)
+        {
+            var tieneAcceso = userRole == "SuperAdmin" ||
+            mod.Roles.Split(',').Any(r => r.Trim() == userRole);
+
+            if (tieneAcceso)
+            {
+                <div class="module-card animate__animated animate__fadeInUp"
+                     style="animation-delay:@mod.Delay"
+                     data-nombre="@mod.Nombre.ToLower()"
+                     onclick="AppRouter.navigate('@mod.Url')"
+                     role="button">
+                    <div class="module-card-icon">
+                        <i class="fa-solid @mod.Icon"></i>
+                    </div>
+                    <h3 class="module-name">@mod.Nombre</h3>
+                    <p class="module-desc">@mod.Desc</p>
+                </div>
+            }
+            else
+            {
+                <div class="module-card module-locked animate__animated animate__fadeInUp"
+                     style="animation-delay:@mod.Delay"
+                     data-nombre="@mod.Nombre.ToLower()">
+                    <div class="module-card-icon">
+                        <i class="fa-solid @mod.Icon"></i>
+                    </div>
+                    <h3 class="module-name">@mod.Nombre</h3>
+                    <p class="module-desc">Sin acceso</p>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function initDashboardSearch() {
+            // ✅ FIX: Buscar el elemento fresco (el innerHTML fue reemplazado por el router)
+            const dashSearch = document.getElementById('dashboardSearch');
+            if (!dashSearch) return;
+
+            // ✅ FIX: Clonar el nodo para eliminar cualquier listener anterior
+            // y evitar que se registren listeners duplicados
+            const fresh = dashSearch.cloneNode(true);
+            dashSearch.parentNode.replaceChild(fresh, dashSearch);
+
+            fresh.addEventListener('input', e => {
+                const q = e.target.value.trim().toLowerCase();
+                document.querySelectorAll('#modulesGrid .module-card').forEach(card => {
+                    const nombre = card.dataset.nombre || '';
+                    card.style.display = (!q || nombre.includes(q)) ? '' : 'none';
+                });
+            });
+        }
+
+        // Carga inicial (hard refresh / primera visita)
+        document.addEventListener('DOMContentLoaded', initDashboardSearch);
+
+        // ✅ FIX: Regreso al dashboard vía SPA
+        // El router despacha 'spaNavigated' después de inyectar el nuevo HTML
+        document.addEventListener('spaNavigated', initDashboardSearch);
+    </script>
+}

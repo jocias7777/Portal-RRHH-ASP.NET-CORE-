@@ -1,0 +1,576 @@
+﻿/* ══════════════════════════════════════════════
+   SICE — Módulo Reclutamiento
+   Color: #D4A0C0 (rosa/lila)
+══════════════════════════════════════════════ */
+:root {
+    --reclu-color: #0d9488;
+    --reclu-dark: #0f766e;
+    --reclu-light: #F0FDFA;
+    --reclu-border: #99F6E4;
+}
+
+/* ══════════════════════════════════════════════
+   Unificación visual con otros módulos (2px)
+══════════════════════════════════════════════ */
+
+.reclu-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.reclu-kpi-card {
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 2px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: var(--shadow-sm);
+}
+
+.reclu-kpi-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    color: #000;
+    flex-shrink: 0;
+}
+
+.reclu-kpi-label {
+    font-size: 11px;
+    color: #64748B;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+}
+
+.reclu-kpi-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--color-dark);
+    font-family: var(--font-mono);
+    line-height: 1.2;
+}
+
+@media (max-width: 1200px) {
+    .reclu-kpi-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 768px) {
+    .reclu-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 480px) {
+    .reclu-kpi-grid { grid-template-columns: 1fr; }
+}
+
+.btn-reclu,
+.btn-outline-reclu,
+.btn-outline-secondary.btn-sm,
+.filtro-select,
+.table-card,
+.modal-content,
+.modal-footer .btn,
+.btn-action,
+.badge-tab,
+.badge-plaza-abierta,
+.badge-plaza-enproceso,
+.badge-plaza-cerrada,
+.badge-plaza-cancelada,
+.etapa-select,
+.btn-candidatos-count {
+    border-radius: 2px !important;
+}
+
+.btn-reclu {
+    background: var(--reclu-color);
+    color: #fff;
+}
+
+.btn-reclu:hover {
+    background: var(--reclu-dark);
+}
+
+.btn-outline-reclu {
+    color: var(--reclu-color);
+    border-color: var(--reclu-color);
+}
+
+.btn-outline-reclu:hover {
+    background: var(--reclu-color);
+    color: #fff;
+}
+
+/* Tabs submódulos estilo uniforme */
+.reclu-tabs {
+    border-bottom: 2px solid var(--color-border);
+}
+
+.reclu-tabs .nav-link {
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+}
+
+.reclu-tabs .nav-link.active {
+    color: var(--reclu-color);
+    border-bottom-color: var(--reclu-color);
+    font-weight: 600;
+}
+
+/* (KPIs inline removidas en Index.cshtml) */
+
+
+/* Tabla y toolbar de tabla */
+.table-card {
+    border-radius: 2px !important;
+}
+
+.table th,
+.table td {
+    font-size: 13px;
+}
+
+/* Modal homogéneo */
+.modal-content {
+    border-radius: 2px !important;
+}
+
+.modal-header-reclu {
+    border-radius: 2px 2px 0 0 !important;
+}
+
+.modal-footer {
+    border-radius: 0 0 2px 2px !important;
+}
+
+.modal-footer .btn {
+    min-width: 100px;
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.modal-footer .btn-outline-secondary {
+    background: #6B7280 !important;
+    color: #fff !important;
+    border: none !important;
+}
+
+.modal-footer .btn-outline-secondary:hover,
+.modal-footer .btn-outline-secondary:focus {
+    background: #6B7280 !important;
+    color: #fff !important;
+    box-shadow: none !important;
+}
+
+/* ── Botón primario ── */
+.btn-reclu {
+    background: var(--reclu-color);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 9px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font-main);
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    line-height: 1.4;
+}
+
+    .btn-reclu:hover {
+        background: var(--reclu-dark);
+        color: #fff;
+    }
+
+    .btn-reclu:active {
+        transform: scale(0.97);
+    }
+
+/* ── Botón outline ── */
+.btn-outline-reclu {
+    background: var(--reclu-color);
+    color: #fff;
+    border: 1px solid var(--reclu-color);
+    border-radius: var(--border-radius);
+    padding: 9px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font-main);
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    line-height: 1.4;
+}
+
+    .btn-outline-reclu:hover {
+        background: var(--reclu-dark);
+        color: #fff;
+    }
+
+    .btn-outline-reclu:active {
+        transform: scale(0.97);
+    }
+
+/* ── Toolbar ── */
+.config-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+/* ── Filtro focus ── */
+.filtro-select:focus {
+    border-color: var(--reclu-color);
+}
+
+/* ── Botones de acción — color fijo siempre ── */
+.btn-action {
+    box-shadow: none !important;
+    border: none !important;
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+    .btn-action.btn-ver {
+        background: #EFF6FF;
+        color: #4A90D9;
+    }
+
+    .btn-action.btn-editar {
+        background: #FEF9C3;
+        color: #92400E;
+    }
+
+    .btn-action.btn-eliminar {
+        background: #FEE2E2;
+        color: #DC2626;
+    }
+
+    .btn-action.btn-ver:hover {
+        background: #DBEAFE;
+    }
+
+    .btn-action.btn-editar:hover {
+        background: #FDE68A;
+    }
+
+    .btn-action.btn-eliminar:hover {
+        background: #FECACA;
+    }
+
+/* ── Modal ── */
+.modal-content {
+    border-radius: 4px !important;
+}
+
+.modal-header-inner {
+    gap: 0 !important;
+}
+
+.modal-footer {
+    border-radius: 0 0 4px 4px !important;
+}
+
+.modal-header-reclu {
+    background: #fff !important;
+    color: var(--color-dark) !important;
+    padding: 16px 20px !important;
+    border-bottom: 1px solid var(--color-border) !important;
+    border-radius: 4px 4px 0 0 !important;
+}
+
+    .modal-header-reclu .modal-title {
+        font-size: 17px !important;
+        font-weight: 600 !important;
+        color: var(--color-dark) !important;
+    }
+
+    .modal-header-reclu .btn-close-white {
+        filter: none !important;
+    }
+
+    .modal-header-reclu .modal-header-icon {
+        display: none !important;
+    }
+
+    .modal-header-reclu small {
+        display: none !important;
+    }
+
+/* ── Campos de formulario ── */
+.form-control, .form-select {
+    border-radius: var(--border-radius-sm) !important;
+    font-size: 13px;
+    font-family: var(--font-main);
+    border-color: var(--color-border);
+}
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--reclu-color) !important;
+        box-shadow: 0 0 0 3px rgba(212,160,192,0.15) !important;
+    }
+
+/* ── Tabs ── */
+.reclu-tabs .nav-link {
+    font-size: 13px;
+    font-weight: 500;
+    color: #64748B;
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    padding: 10px 16px;
+}
+
+    .reclu-tabs .nav-link.active {
+        color: var(--reclu-dark);
+        border-bottom-color: var(--reclu-color);
+        background: transparent;
+    }
+
+.badge-tab {
+    background: var(--reclu-light);
+    color: var(--reclu-dark);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 10px;
+    margin-left: 6px;
+}
+
+/* ── Badges estado plaza ── */
+.badge-plaza-abierta {
+    background: #D1FAE5;
+    color: #065F46;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.badge-plaza-enproceso {
+    background: #DBEAFE;
+    color: #1E40AF;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.badge-plaza-cerrada {
+    background: #F1F5F9;
+    color: #475569;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.badge-plaza-cancelada {
+    background: #FEE2E2;
+    color: #991B1B;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* ── Etapas candidatos ── */
+.etapa-select {
+    border: none;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    cursor: pointer;
+    outline: none;
+}
+
+.etapa-recibido {
+    background: #F1F5F9;
+    color: #475569;
+}
+
+.etapa-entrevista {
+    background: #DBEAFE;
+    color: #1E40ED;
+}
+
+.etapa-pruebas {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.etapa-oferta {
+    background: #EDE9FE;
+    color: #5B21B6;
+}
+
+.etapa-contratado {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.etapa-rechazado {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+/* ── Botón candidatos count ── */
+.btn-candidatos-count {
+    background: transparent;
+    color: #0F172A;
+    border: 1px solid #E5E7EB;
+    border-radius: 2px;
+    min-width: 78px;
+    min-height: 42px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.1;
+    gap: 2px;
+}
+
+.btn-candidatos-count .candidatos-main {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-candidatos-count .candidatos-main i,
+.btn-candidatos-count .candidatos-main strong {
+    color: #0F172A;
+    font-size: 13px;
+}
+
+.btn-candidatos-count .candidatos-sub {
+    color: #334155;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+    .btn-candidatos-count:hover {
+        background: #F8FAFC;
+        color: #0F172A;
+        border-color: #D1D5DB;
+    }
+
+
+
+/* ── Botón CV ── */
+.btn-cv {
+    color: var(--color-danger);
+    font-size: 18px;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+    .btn-cv:hover {
+        color: #991B1B;
+        transform: scale(1.1);
+    }
+
+/* ══════════════════════════════════════════════
+   BOTONES DE ACCIÓN NEGROS (sin fondos de color)
+══════════════════════════════════════════════ */
+#tablaPlazas_wrapper .btn-action,
+#tablaCandidatos_wrapper .btn-action,
+#tablaPlazas_wrapper .btn-action.btn-ver,
+#tablaPlazas_wrapper .btn-action.btn-editar,
+#tablaPlazas_wrapper .btn-action.btn-eliminar,
+#tablaCandidatos_wrapper .btn-action.btn-ver,
+#tablaCandidatos_wrapper .btn-action.btn-editar,
+#tablaCandidatos_wrapper .btn-action.btn-eliminar {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: #000 !important;
+    border-radius: 2px !important;
+}
+
+#tablaPlazas_wrapper .btn-action:hover,
+#tablaCandidatos_wrapper .btn-action:hover {
+    background: transparent !important;
+    color: #000 !important;
+    transform: none !important;
+}
+
+/* ══════════════════════════════════════════════
+   HEADERS TABLAS RECLUTAMIENTO (PLAZAS/CANDIDATOS)
+══════════════════════════════════════════════ */
+#tablaPlazas_wrapper table.dataTable thead > tr > th,
+#tablaPlazas_wrapper table.dataTable thead > tr > td,
+#tablaPlazas_wrapper table.dataTable thead th .dt-column-title,
+#tablaCandidatos_wrapper table.dataTable thead > tr > th,
+#tablaCandidatos_wrapper table.dataTable thead > tr > td,
+#tablaCandidatos_wrapper table.dataTable thead th .dt-column-title {
+    font-family: var(--font-main) !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    color: #111827 !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+    opacity: 1 !important;
+}
+
+#tablaPlazas_wrapper table.dataTable thead th *,
+#tablaCandidatos_wrapper table.dataTable thead th * {
+    font-weight: 800 !important;
+    color: #111827 !important;
+}
+
+/* ══════════════════════════════════════════════
+   OCULTAR FLECHAS DE ORDEN (PLAZAS/CANDIDATOS)
+══════════════════════════════════════════════ */
+#tablaPlazas_wrapper table.dataTable thead .sorting:before,
+#tablaPlazas_wrapper table.dataTable thead .sorting:after,
+#tablaPlazas_wrapper table.dataTable thead .sorting_asc:before,
+#tablaPlazas_wrapper table.dataTable thead .sorting_asc:after,
+#tablaPlazas_wrapper table.dataTable thead .sorting_desc:before,
+#tablaPlazas_wrapper table.dataTable thead .sorting_desc:after,
+#tablaPlazas_wrapper table.dataTable thead .sorting_asc_disabled:before,
+#tablaPlazas_wrapper table.dataTable thead .sorting_asc_disabled:after,
+#tablaPlazas_wrapper table.dataTable thead .sorting_desc_disabled:before,
+#tablaPlazas_wrapper table.dataTable thead .sorting_desc_disabled:after,
+#tablaCandidatos_wrapper table.dataTable thead .sorting:before,
+#tablaCandidatos_wrapper table.dataTable thead .sorting:after,
+#tablaCandidatos_wrapper table.dataTable thead .sorting_asc:before,
+#tablaCandidatos_wrapper table.dataTable thead .sorting_asc:after,
+#tablaCandidatos_wrapper table.dataTable thead .sorting_desc:before,
+#tablaCandidatos_wrapper table.dataTable thead .sorting_desc:after,
+#tablaCandidatos_wrapper table.dataTable thead .sorting_asc_disabled:before,
+#tablaCandidatos_wrapper table.dataTable thead .sorting_asc_disabled:after,
+#tablaCandidatos_wrapper table.dataTable thead .sorting_desc_disabled:before,
+#tablaCandidatos_wrapper table.dataTable thead .sorting_desc_disabled:after {
+    display: none !important;
+}
+
+#tablaPlazas_wrapper table.dataTable thead .dt-column-order,
+#tablaCandidatos_wrapper table.dataTable thead .dt-column-order {
+    display: none !important;
+}
+

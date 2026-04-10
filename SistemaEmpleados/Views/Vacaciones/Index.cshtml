@@ -1,0 +1,221 @@
+﻿@{
+    ViewData["Title"] = "Vacaciones y Ausencias";
+    Layout = "_Layout";
+}
+@section HeadStyles {
+    <link rel="stylesheet" href="~/css/views/vacaciones.css" asp-append-version="true" />
+}
+
+<div class="module-page animate__animated animate__fadeIn">
+
+    <!-- ── HEADER ── -->
+    <div class="module-header">
+        <div class="module-header-left">
+            <div>
+                <h1 class="module-title">Vacaciones y Ausencias</h1>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── KPI CARDS ── -->
+    <div class="vac-kpi-grid">
+        <div class="vac-kpi-card">
+            <div class="vac-kpi-icon" style="background: transparent;">
+                <i class="fa-solid fa-umbrella-beach" style="color: #000000;"></i>
+            </div>
+            <div>
+                <div class="vac-kpi-label">Solicitudes este año</div>
+                <div class="vac-kpi-value" id="kpiTotalSolicitudes">0</div>
+            </div>
+        </div>
+        <div class="vac-kpi-card">
+            <div class="vac-kpi-icon" style="background: transparent;">
+                <i class="fa-solid fa-clock" style="color: #000000;"></i>
+            </div>
+            <div>
+                <div class="vac-kpi-label">Pendientes de aprobación</div>
+                <div class="vac-kpi-value" id="kpiPendientes">0</div>
+            </div>
+        </div>
+        <div class="vac-kpi-card">
+            <div class="vac-kpi-icon" style="background: transparent;">
+                <i class="fa-solid fa-circle-check" style="color: #000000;"></i>
+            </div>
+            <div>
+                <div class="vac-kpi-label">Aprobadas</div>
+                <div class="vac-kpi-value" id="kpiAprobadas">0</div>
+            </div>
+        </div>
+        <div class="vac-kpi-card">
+            <div class="vac-kpi-icon" style="background: transparent;">
+                <i class="fa-solid fa-person-walking-arrow-right" style="color: #000000;"></i>
+            </div>
+            <div>
+                <div class="vac-kpi-label">Empleados de vacaciones hoy</div>
+                <div class="vac-kpi-value" id="kpiEnVacaciones">0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── TABS ── -->
+    <div class="module-tabs">
+        <button class="module-tab active"
+                data-tab="solicitudes" onclick="VacacionesTabs.show('solicitudes')">
+            <i></i>Solicitudes
+        </button>
+        <button class="module-tab"
+                data-tab="ausencias" onclick="VacacionesTabs.show('ausencias')">
+            <i></i>Ausencias
+        </button>
+        <button class="module-tab"
+                data-tab="saldos" onclick="VacacionesTabs.show('saldos')">
+            <i></i>Saldos
+        </button>
+    </div>
+
+    <!-- ══ TAB 1 — SOLICITUDES ══ -->
+    <div id="tab-solicitudes" class="tab-content-vac active">
+        <div class="config-toolbar">
+            @if (User.IsInRole("SuperAdmin") || User.IsInRole("RRHH"))
+            {
+                <button class="btn btn-vacaciones" id="btnNuevaVacacion">
+                    <i></i>Nueva Solicitud
+                </button>
+            }
+            <select id="filtroDeptoVac" class="filtro-select" style="min-width:180px">
+                <option value="">Todos los departamentos</option>
+            </select>
+            <select id="filtroEstadoVac" class="filtro-select">
+                <option value="">Todos los estados</option>
+                <option value="Pendiente">Pendiente</option>
+                <option value="Aprobado">Aprobado</option>
+                <option value="Rechazado">Rechazado</option>
+                <option value="Cancelado">Cancelado</option>
+            </select>
+            <button class="btn btn-outline-secondary btn-sm" id="btnLimpiarVac">
+                <i class="fa-solid fa-rotate-left me-1"></i>
+            </button>
+            <div class="ms-auto">
+                <span class="badge-count" id="totalVacaciones">— solicitudes</span>
+            </div>
+        </div>
+        <div class="table-card">
+            <table id="tablaVacaciones" class="table w-100">
+                <thead>
+                    <tr>
+                        <th width="44">#</th>
+                        <th>Empleado</th>
+                        <th>Departamento</th>
+                        <th width="110">Fecha inicio</th>
+                        <th width="110">Fecha fin</th>
+                        <th width="80">Días háb.</th>
+                        <th width="110">Solicitado</th>
+                        <th width="120">Estado</th>
+                        <th width="130">Aprobado por</th>
+                        <th width="120" class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+
+    <!-- ══ TAB 2 — AUSENCIAS ══ -->
+    <div id="tab-ausencias" class="tab-content-vac">
+        <div class="config-toolbar">
+            @if (User.IsInRole("SuperAdmin") || User.IsInRole("RRHH"))
+            {
+                <button class="btn btn-vacaciones" id="btnNuevaAusencia">
+                    <i></i>Registrar Ausencia
+                </button>
+            }
+            <select id="filtroTipoAusencia" class="filtro-select">
+                <option value="">Todos los tipos</option>
+                <option value="Enfermedad">Enfermedad</option>
+                <option value="Personal">Personal</option>
+                <option value="Maternidad">Maternidad</option>
+                <option value="Paternidad">Paternidad</option>
+                <option value="Duelo">Duelo</option>
+                <option value="Otro">Otro</option>
+            </select>
+            <select id="filtroJustificada" class="filtro-select">
+                <option value="">Todas</option>
+                <option value="true">Justificadas</option>
+                <option value="false">Injustificadas</option>
+            </select>
+            <div class="ms-auto">
+                <span class="badge-count" id="totalAusencias">— ausencias</span>
+            </div>
+        </div>
+        <div class="table-card">
+            <table class="table w-100">
+                <thead>
+                    <tr>
+                        <th width="44">#</th>
+                        <th>Empleado</th>
+                        <th width="130">Tipo</th>
+                        <th width="110">Fecha inicio</th>
+                        <th width="110">Fecha fin</th>
+                        <th width="80">Días</th>
+                        <th width="110">Justificada</th>
+                        <th>Observación</th>
+                        <th width="100" class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="bodyAusencias"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ══ TAB 3 — SALDOS ══ -->
+    <div id="tab-saldos" class="tab-content-vac">
+        <div class="config-toolbar">
+            <select id="filtroDeptoSaldos" class="filtro-select" style="min-width:180px">
+                <option value="">Todos los departamentos</option>
+            </select>
+            <input type="text" id="buscarEmpleadoSaldo"
+                   class="filtro-select" style="width:220px"
+                   placeholder="Buscar empleado...">
+            <div class="ms-auto">
+                <span class="badge-count" id="totalSaldos">— empleados</span>
+            </div>
+        </div>
+        <div class="table-card">
+            <table class="table w-100">
+                <thead>
+                    <tr>
+                        <th width="44">#</th>
+                        <th>Empleado</th>
+                        <th width="150">Departamento</th>
+                        <th width="110">Antigüedad</th>
+                        <th width="130">Días corresponden</th>
+                        <th width="100">Días tomados</th>
+                        <th width="100">Días pendientes</th>
+                        <th width="110">Días disponibles</th>
+                    </tr>
+                </thead>
+                <tbody id="bodySaldos"></tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+@Html.AntiForgeryToken()
+
+@section Scripts {
+    <script src="~/js/modules/vacaciones.js" asp-append-version="true"></script>
+}
+<script>
+    (function () {
+        if (typeof jQuery !== 'undefined' && typeof jQuery.fn.DataTable !== 'undefined') {
+            if (typeof Vacaciones !== 'undefined') {
+                Vacaciones.init();
+            } else {
+                var s = document.createElement('script');
+                s.src = '/js/modules/vacaciones.js';
+                s.onload = function () { Vacaciones.init(); };
+                document.body.appendChild(s);
+            }
+        }
+    })();
+</script>

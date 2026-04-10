@@ -1,0 +1,127 @@
+﻿@model SistemaEmpleados.Models.ViewModels.PlazaVacanteViewModel
+
+@{
+    var esEdicion = Model.Id > 0;
+}
+
+<div class="modal-header modal-header-reclu">
+    <div class="modal-header-inner">
+        <div class="modal-header-icon">
+            <i class="fa-solid fa-briefcase"></i>
+        </div>
+        <div>
+            <h5 class="modal-title">@(esEdicion ? "Editar Plaza" : "Nueva Plaza Vacante")</h5>
+            <small class="text-white-50">Proceso de reclutamiento</small>
+        </div>
+    </div>
+    <button type="button" class="btn-close btn-close-white"
+            onclick="Reclutamiento.cerrarModal()"></button>
+</div>
+
+<form id="formPlaza" novalidate>
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="Id" value="@Model.Id" />
+    <input type="hidden" name="FormType" value="plaza" />
+
+    <div class="modal-body">
+        <div class="row g-3">
+            <div class="col-12">
+                <label class="form-label required-field">Título del puesto</label>
+                <input type="text" name="Titulo" class="form-control"
+                       value="@Model.Titulo" placeholder="Ej. Desarrollador Web Senior" required />
+                <div class="invalid-feedback"></div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label required-field">Departamento</label>
+                <select name="DepartamentoId" id="selectDeptPlaza" class="form-select" required>
+                    <option value="">— Seleccionar —</option>
+                    @if (ViewBag.Departamentos != null)
+                    {
+                        foreach (var d in ViewBag.Departamentos)
+                        {
+                            <option value="@d.Id" selected="@(Model.DepartamentoId == d.Id)">@d.Nombre</option>
+                        }
+                    }
+                </select>
+                <div class="invalid-feedback"></div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Puesto</label>
+                <select name="PuestoId" id="selectPuestoPlaza" class="form-select">
+                    <option value="">— Opcional —</option>
+                    @if (ViewBag.Puestos != null)
+                    {
+                        foreach (var p in ViewBag.Puestos)
+                        {
+                            <option value="@p.Id"
+                                    data-depto="@p.DepartamentoId"
+                                    selected="@(Model.PuestoId == p.Id)">@p.Nombre</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Salario ofrecido (Q)</label>
+                <div class="input-group">
+                    <span class="input-group-text">Q</span>
+                    <input type="number" name="SalarioOfrecido" class="form-control"
+                           value="@Model.SalarioOfrecido" min="0" step="0.01" />
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label required-field">Cantidad de vacantes</label>
+                <input type="number" name="CantidadVacantes" class="form-control"
+                       value="@Model.CantidadVacantes" min="1" max="99" required />
+                <div class="invalid-feedback"></div>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Estado</label>
+                <select name="Estado" class="form-select">
+                    @foreach (var s in Enum.GetValues<SistemaEmpleados.Models.Entities.EstadoPlaza>())
+                    {
+                        <option value="@((int)s)" selected="@(Model.Estado == s)">@s</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Fecha publicación</label>
+                <input type="date" name="FechaPublicacion" class="form-control"
+                       value="@Model.FechaPublicacion.ToString("yyyy-MM-dd")" />
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Fecha cierre</label>
+                <input type="date" name="FechaCierre" class="form-control"
+                       value="@Model.FechaCierre?.ToString("yyyy-MM-dd")" />
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">Descripción del puesto</label>
+                <textarea name="Descripcion" class="form-control" rows="3"
+                          placeholder="Descripción de funciones y responsabilidades...">@Model.Descripcion</textarea>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">Requisitos mínimos</label>
+                <textarea name="RequisitoMinimos" class="form-control" rows="3"
+                          placeholder="Educación, experiencia, habilidades requeridas...">@Model.RequisitoMinimos</textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary"
+                onclick="Reclutamiento.cerrarModal()">
+            <i class="fa-solid fa-arrow-left me-2"></i>Cancelar
+        </button>
+        <button type="submit" class="btn btn-reclu" id="btnGuardarPlaza">
+            <i class="fa-solid fa-check me-2"></i>Guardar plaza
+        </button>
+    </div>
+</form>

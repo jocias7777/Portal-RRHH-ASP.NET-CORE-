@@ -1,0 +1,856 @@
+﻿/* ══════════════════════════════════════════════
+   SICE — Módulo Prestaciones Laborales
+   Color: #E8A0A0 (rosa/coral)
+══════════════════════════════════════════════ */
+
+:root {
+    --prestcolor: #0d9488; /* Verde agua principal */
+    --prest-dark: #0f766e; /* Verde agua oscuro */
+    --prest-light: #F0FDFA; /* Fondo verde agua clarito */
+    --prest-border: #99F6E4; /* Borde verde agua clarito */
+}
+
+/* ── Botón primario ── */
+.btn-prestaciones {
+    background: var(--prest-color);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 9px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font-main);
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    line-height: 1.4;
+}
+
+    .btn-prestaciones:hover {
+        background: var(--prest-dark);
+        color: #fff;
+    }
+
+    .btn-prestaciones:active {
+        transform: scale(0.97);
+    }
+
+/* ── Botón outline ── */
+.btn-outline-prestaciones {
+    background: transparent;
+    color: var(--prest-dark);
+    border: 1px solid var(--prest-color);
+    border-radius: var(--border-radius);
+    padding: 9px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font-main);
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    line-height: 1.4;
+}
+
+    .btn-outline-prestaciones:hover {
+        background: var(--prest-light);
+        color: var(--prest-dark);
+    }
+
+    .btn-outline-prestaciones:active {
+        transform: scale(0.97);
+    }
+
+/* ── Toolbar ── */
+.config-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+/* ── Filtro focus ── */
+.filtro-select:focus {
+    border-color: var(--prest-color);
+}
+
+/* ── Botones de acción — color fijo siempre ── */
+.btn-action {
+    box-shadow: none !important;
+    border: none !important;
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+    .btn-action.btn-ver {
+        background: #D1FAE5;
+        color: #065F46;
+    }
+
+    .btn-action.btn-editar {
+        background: #FEF9C3;
+        color: #92400E;
+    }
+
+    .btn-action.btn-eliminar {
+        background: #FEE2E2;
+        color: #DC2626;
+    }
+
+    .btn-action.btn-ver:hover {
+        background: #A7F3D0;
+    }
+
+    .btn-action.btn-editar:hover {
+        background: #FDE68A;
+    }
+
+    .btn-action.btn-eliminar:hover {
+        background: #FECACA;
+    }
+
+/* ── Modal ── */
+.modal-content {
+    border-radius: 4px !important;
+}
+
+.modal-header-inner {
+    gap: 0 !important;
+}
+
+.modal-footer {
+    border-radius: 0 0 4px 4px !important;
+}
+
+.modal-header-prestaciones {
+    background: #fff !important;
+    color: var(--color-dark) !important;
+    padding: 16px 20px !important;
+    border-bottom: 1px solid var(--color-border) !important;
+    border-radius: 4px 4px 0 0 !important;
+}
+
+    .modal-header-prestaciones .modal-title {
+        font-size: 17px !important;
+        font-weight: 600 !important;
+        color: var(--color-dark) !important;
+    }
+
+    .modal-header-prestaciones .btn-close-white {
+        filter: none !important;
+    }
+
+    .modal-header-prestaciones .modal-header-icon {
+        display: none !important;
+    }
+
+    .modal-header-prestaciones small {
+        display: none !important;
+    }
+
+/* ── Campos de formulario ── */
+.form-control, .form-select {
+    border-radius: var(--border-radius-sm) !important;
+    font-size: 13px;
+    font-family: var(--font-main);
+    border-color: var(--color-border);
+}
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--prest-color) !important;
+        box-shadow: 0 0 0 3px rgba(232,160,160,0.15) !important;
+    }
+
+/* ── Badges tipo ── */
+.tipo-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 10px;
+}
+
+.tipo-aguinaldo {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.tipo-bono14 {
+    background: #EDE9FE;
+    color: #5B21B6;
+}
+
+.tipo-indemnizacion {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+.tipo-finiquito {
+    background: #F1F5F9;
+    color: #334155;
+}
+
+.tipo-otro {
+    background: #F0FDF4;
+    color: #166534;
+}
+
+/* ── Badges estado ── */
+.badge-prest-pendiente {
+    background: #FEF9C3;
+    color: #854D0E;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.badge-prest-calculado {
+    background: #DBEAFE;
+    color: #1E40AF;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.badge-prest-pagado {
+    background: #D1FAE5;
+    color: #065F46;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.badge-prest-cancelado {
+    background: #F1F5F9;
+    color: #475569;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* ── Card de cálculo ── */
+.calculo-prestacion-card {
+    background: var(--prest-light);
+    border: 1px solid var(--prest-border);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.calculo-header {
+    background: linear-gradient(135deg, #E8A0A0, #C97070);
+    color: #fff;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.calculo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--prest-border);
+}
+
+.calculo-item-prest {
+    background: #fff;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 12px;
+    color: #64748B;
+}
+
+    .calculo-item-prest strong {
+        font-size: 15px;
+        color: var(--color-dark);
+        font-family: var(--font-mono);
+    }
+
+    .calculo-item-prest.total {
+        background: var(--prest-light);
+    }
+
+        .calculo-item-prest.total strong {
+            font-size: 18px;
+            color: var(--prest-dark);
+        }
+
+
+
+
+/* ── KPI Grid Prestaciones ── */
+.prest-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 992px) {
+    .prest-kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .prest-kpi-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.prest-kpi-card {
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: var(--shadow-sm);
+}
+
+/* ── Iconos de las KPI limpios sin fondo ── */
+.prest-kpi-icon {
+    width: auto; /* Quitamos la caja fija */
+    height: auto; /* Quitamos la caja fija */
+    background: transparent !important; /* Aseguramos que NO haya color de fondo */
+    color: #000000 !important; /* El icono siempre negro */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px; /* Hacemos el icono más grande (estaba en 18px) */
+    flex-shrink: 0;
+    margin-right: 4px; /* Un pequeño margen hacia la derecha */
+}
+
+.prest-kpi-label {
+    font-size: 11px;
+    color: #64748B;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.prest-kpi-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--color-dark);
+    font-family: var(--font-mono);
+    line-height: 1.2;
+}
+
+/* ── Tabs Prestaciones ── */
+.tab-content-prest {
+    display: none;
+}
+
+    .tab-content-prest.active {
+        display: block;
+    }
+
+
+
+
+/* ══════════════════════════════════════════════
+   TABS — igual a Nómina y Vacaciones
+══════════════════════════════════════════════ */
+.tab-content-prest {
+    display: none;
+}
+
+    .tab-content-prest.active {
+        display: block;
+    }
+
+.module-page .module-tabs {
+    border-bottom: 2px solid var(--color-border);
+    display: flex;
+    gap: 0;
+    margin-bottom: 20px;
+    background: transparent;
+    padding: 0;
+    box-shadow: none;
+    border-radius: 0;
+}
+
+.module-page .module-tab {
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #64748B;
+    cursor: pointer;
+    transition: var(--transition);
+    border-radius: 0;
+    box-shadow: none !important;
+    outline: none;
+}
+
+    .module-page .module-tab:hover {
+        color: var(--prestcolor);
+        background: transparent;
+    }
+
+    .module-page .module-tab.active {
+        color: var(--prestcolor);
+        border-bottom-color: var(--prestcolor);
+        font-weight: 600;
+        background: transparent;
+    }
+
+/* ══════════════════════════════════════════════
+   KPI CARDS — mismo estilo que Personal
+══════════════════════════════════════════════ */
+.prest-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 992px) {
+    .prest-kpi-grid {
+        grid-template-columns: repeat(2,1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .prest-kpi-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.prest-kpi-card {
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 2px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: var(--shadow-sm);
+}
+
+.prest-kpi-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.prest-kpi-label {
+    font-size: 11px;
+    color: #64748B;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.prest-kpi-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--color-dark);
+    font-family: var(--font-mono);
+    line-height: 1.2;
+}
+
+/* ══════════════════════════════════════════════
+   BOTONES ACCIÓN — negro igual a Personal
+══════════════════════════════════════════════ */
+.btn-action {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    width: 30px;
+    height: 25px;
+    border-radius: 2px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #000000 !important;
+    font-size: 13px !important;
+}
+
+    .btn-action:hover {
+        background: transparent !important;
+        color: #000000 !important;
+        transform: none !important;
+    }
+
+    .btn-action i {
+        -webkit-text-stroke: 0px transparent !important;
+    }
+
+/* ══════════════════════════════════════════════
+   BOTÓN PRINCIPAL PRESTACIONES
+══════════════════════════════════════════════ */
+.btn-prestaciones {
+    background: var(--prestcolor);
+    color: #fff;
+    border: none;
+    border-radius: 2px;
+    padding: 9px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font-main);
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    line-height: 1.4;
+}
+
+    .btn-prestaciones:hover {
+        background: var(--prest-dark);
+        color: #fff;
+    }
+
+.btn-outline-prestaciones {
+    background: transparent;
+    color: var(--prestcolor);
+    border: 1.5px solid var(--prestcolor);
+    border-radius: 2px;
+    padding: 9px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font-main);
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    line-height: 1.4;
+}
+
+    .btn-outline-prestaciones:hover {
+        background: var(--prestcolor);
+        color: #fff;
+    }
+
+/* ══════════════════════════════════════════════
+   TABLE CARD
+══════════════════════════════════════════════ */
+.table-card {
+    border-radius: 2px;
+}
+
+.table-card-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-bottom: 1px solid #E5E7EB;
+    background: #F8FAFC;
+    border-radius: 2px 2px 0 0;
+}
+
+.btn-prest-aux {
+    background: #F3F4F6;
+    color: #374151;
+    border: 1px solid #D1D5DB;
+    border-radius: 2px !important;
+    min-height: 32px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.btn-prest-aux:hover,
+.btn-prest-aux:focus {
+    background: #E5E7EB;
+    color: #1F2937;
+    border-color: #D1D5DB;
+    box-shadow: none;
+}
+
+/* ══════════════════════════════════════════════
+   MODAL
+══════════════════════════════════════════════ */
+.modal-content {
+    border-radius: 2px !important;
+}
+
+.modal-footer {
+    border-radius: 0 0 2px 2px !important;
+}
+
+    .modal-footer .btn {
+        min-width: 100px;
+        padding: 8px 18px;
+        font-size: 13px;
+        font-weight: 500;
+        border-radius: 2px !important;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+    }
+
+    .modal-footer .btn-outline-secondary {
+        background: #6b7280 !important;
+        color: #fff !important;
+        border: none !important;
+    }
+
+        .modal-footer .btn-outline-secondary:hover,
+        .modal-footer .btn-outline-secondary:focus {
+            background: #6b7280 !important;
+            color: #fff !important;
+            box-shadow: none !important;
+        }
+
+/* ══════════════════════════════════════════════
+   BADGES TIPO PRESTACIÓN
+══════════════════════════════════════════════ */
+.tipo-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 9px;
+    border-radius: 2px;
+}
+
+.tipo-aguinaldo {
+    background: #FFFBEB;
+    color: #92400E;
+}
+
+.tipo-bono14 {
+    background: #EFF6FF;
+    color: #1D4ED8;
+}
+
+.tipo-indemnizacion {
+    background: #FEF3C7;
+    color: #B45309;
+}
+
+.tipo-finiquito {
+    background: #F0FDF4;
+    color: #15803D;
+}
+
+/* ══════════════════════════════════════════════
+   BADGES ESTADO PRESTACIÓN
+══════════════════════════════════════════════ */
+.badge-prest-pendiente {
+    background: #FEF3C7;
+    color: #92400E;
+    padding: 3px 10px;
+    border-radius: 2px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.badge-prest-calculado {
+    background: #DBEAFE;
+    color: #1D4ED8;
+    padding: 3px 10px;
+    border-radius: 2px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.badge-prest-pagado {
+    background: #D1FAE5;
+    color: #065F46;
+    padding: 3px 10px;
+    border-radius: 2px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.badge-prest-cancelado {
+    background: #F1F5F9;
+    color: #475569;
+    padding: 3px 10px;
+    border-radius: 2px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+
+/* ══════════════════════════════════════════════
+   UNIFICACIÓN DE MODALES (referencia: Vacaciones)
+══════════════════════════════════════════════ */
+#modalEmpleado .modal-content {
+    border-radius: 4px !important;
+}
+
+#modalEmpleado .modal-header,
+#modalEmpleado .modal-header.modal-header-prestaciones {
+    background: #fff !important;
+    color: var(--color-dark) !important;
+    padding: 16px 20px !important;
+    border-bottom: 1px solid var(--color-border) !important;
+    border-radius: 4px 4px 0 0 !important;
+}
+
+#modalEmpleado .modal-header .modal-title {
+    font-size: 17px !important;
+    font-weight: 600 !important;
+    color: var(--color-dark) !important;
+}
+
+#modalEmpleado .modal-header .modal-header-icon,
+#modalEmpleado .modal-header small {
+    display: none !important;
+}
+
+#modalEmpleado .modal-footer .btn {
+    min-width: 100px;
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 2px !important;
+}
+
+/* ══════════════════════════════════════════════
+   MODAL ELIMINAR — 2px + tamaño uniforme
+══════════════════════════════════════════════ */
+.sice-delete-popup {
+    border-radius: 2px !important;
+}
+
+.sice-delete-actions {
+    gap: 8px;
+}
+
+.sice-delete-btn {
+    min-width: 120px;
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    border-radius: 2px !important;
+    color: #fff;
+}
+
+.sice-delete-btn-cancel {
+    background: #6B7280;
+}
+
+.sice-delete-btn-confirm {
+    background: #DC2626;
+}
+
+/* ══════════════════════════════════════════════
+   SWEETALERT MODALES DEL MÓDULO PRESTACIONES
+   (no aplica al modal de eliminar)
+══════════════════════════════════════════════ */
+.prest-swal-popup {
+    border-radius: 2px !important;
+    padding: 0.75rem 0.75rem 0.5rem !important;
+}
+
+.prest-swal-actions {
+    gap: 8px;
+}
+
+.prest-swal-popup .swal2-title {
+    font-size: 17px !important;
+    font-weight: 600 !important;
+    color: var(--color-dark) !important;
+}
+
+.prest-swal-popup .swal2-html-container {
+    font-size: 13px !important;
+    color: #374151 !important;
+}
+
+.prest-swal-popup .swal2-input,
+.prest-swal-popup .swal2-select,
+.prest-swal-popup textarea {
+    border-radius: 2px !important;
+    border-color: #D1D5DB !important;
+    box-shadow: none !important;
+}
+
+.prest-swal-btn {
+    min-width: 120px;
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    border-radius: 2px !important;
+    color: #fff;
+}
+
+.prest-swal-btn-confirm {
+    background: var(--prestcolor) !important;
+}
+
+.prest-swal-btn-cancel {
+    background: #6B7280 !important;
+}
+
+/* ══════════════════════════════════════════════
+   TABLA PRESTACIONES — ocultar flechas de orden
+══════════════════════════════════════════════ */
+#tablaPrestaciones_wrapper table.dataTable thead .sorting:before,
+#tablaPrestaciones_wrapper table.dataTable thead .sorting:after,
+#tablaPrestaciones_wrapper table.dataTable thead .sorting_asc:before,
+#tablaPrestaciones_wrapper table.dataTable thead .sorting_asc:after,
+#tablaPrestaciones_wrapper table.dataTable thead .sorting_desc:before,
+#tablaPrestaciones_wrapper table.dataTable thead .sorting_desc:after,
+#tablaPrestaciones_wrapper table.dataTable thead .sorting_asc_disabled:before,
+#tablaPrestaciones_wrapper table.dataTable thead .sorting_asc_disabled:after,
+#tablaPrestaciones_wrapper table.dataTable thead .sorting_desc_disabled:before,
+#tablaPrestaciones_wrapper table.dataTable thead .sorting_desc_disabled:after {
+    display: none !important;
+}
+
+#tablaPrestaciones_wrapper table.dataTable thead .dt-column-order {
+    display: none !important;
+}
+
+/* ══════════════════════════════════════════════
+   TIPOGRAFÍA HEADER TABLA PRESTACIONES
+══════════════════════════════════════════════ */
+#tab-prestaciones .table-card table thead th,
+#tablaPrestaciones_wrapper table.dataTable thead > tr > th,
+#tablaPrestaciones_wrapper table.dataTable thead > tr > td,
+#tablaPrestaciones_wrapper table.dataTable thead th.sorting,
+#tablaPrestaciones_wrapper table.dataTable thead th.sorting_asc,
+#tablaPrestaciones_wrapper table.dataTable thead th.sorting_desc,
+#tablaPrestaciones_wrapper table.dataTable thead th .dt-column-title {
+    font-family: var(--font-main) !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    color: #111827 !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+    opacity: 1 !important;
+}
+
+#tablaPrestaciones_wrapper table.dataTable thead th * {
+    font-weight: 800 !important;
+    color: #111827 !important;
+}
+
+
+

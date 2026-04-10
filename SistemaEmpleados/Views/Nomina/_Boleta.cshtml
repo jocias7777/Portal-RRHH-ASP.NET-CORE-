@@ -1,0 +1,174 @@
+﻿@model SistemaEmpleados.Models.ViewModels.BoletaPagoViewModel
+
+<div class="modal-header" style="background:#fff;border-bottom:1px solid #E2E8F0;
+     padding:16px 20px;">
+    <div>
+        <h5 class="modal-title fw-700" style="font-size:16px">
+            <i class="fa-solid fa-file-invoice-dollar me-2"
+               style="color:#C4A35A"></i>Boleta de Pago
+        </h5>
+        <small class="text-muted">@Model.Periodo</small>
+    </div>
+    <button type="button" class="btn-close"
+            onclick="Nomina.cerrarModal()"></button>
+</div>
+
+<div class="modal-body" style="padding:20px">
+
+    <!-- Datos del empleado -->
+    <div style="background:#F8FAFC;border-radius:8px;padding:16px;
+                margin-bottom:16px;border:1px solid #E2E8F0">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px">
+            <div>
+                <span style="color:#64748B">Empleado</span><br>
+                <strong>@Model.NombreEmpleado</strong>
+            </div>
+            <div>
+                <span style="color:#64748B">Código</span><br>
+                <strong>@Model.CodigoEmpleado</strong>
+            </div>
+            <div>
+                <span style="color:#64748B">Departamento</span><br>
+                <strong>@Model.Departamento</strong>
+            </div>
+            <div>
+                <span style="color:#64748B">Puesto</span><br>
+                <strong>@Model.Puesto</strong>
+            </div>
+            <div>
+                <span style="color:#64748B">NIT</span><br>
+                <strong>@Model.NIT</strong>
+            </div>
+            <div>
+                <span style="color:#64748B">No. IGSS</span><br>
+                <strong>@Model.NumeroIGSS</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Devengados -->
+    <table class="table table-sm" style="font-size:13px">
+        <thead>
+            <tr style="background:#F1F5F9">
+                <th colspan="2" style="padding:8px 12px;color:#475569">
+                    INGRESOS
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Salario base</td>
+                <td class="text-end monospace">
+                    Q @Model.SalarioBase.ToString("N2")
+                </td>
+            </tr>
+            @if (Model.HorasExtraMonto > 0)
+            {
+                <tr>
+                    <td>Horas extra</td>
+                    <td class="text-end monospace">
+                        Q @Model.HorasExtraMonto.ToString("N2")
+                    </td>
+                </tr>
+            }
+            <tr>
+                <td>Bonificación incentivo (Dto. 78-89)</td>
+                <td class="text-end monospace">
+                    Q @Model.Bonificacion250.ToString("N2")
+                </td>
+            </tr>
+            @if (Model.OtrosBonos > 0)
+            {
+                <tr>
+                    <td>Otros bonos</td>
+                    <td class="text-end monospace">
+                        Q @Model.OtrosBonos.ToString("N2")
+                    </td>
+                </tr>
+            }
+            <tr style="background:#F8FAFC;font-weight:700">
+                <td>TOTAL DEVENGADO</td>
+                <td class="text-end monospace">
+                    Q @Model.TotalDevengado.ToString("N2")
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Deducciones -->
+    <table class="table table-sm" style="font-size:13px;margin-top:8px">
+        <thead>
+            <tr style="background:#FEE2E2">
+                <th colspan="2" style="padding:8px 12px;color:#991B1B">
+                    DEDUCCIONES
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Cuota IGSS laboral (4.83%)</td>
+                <td class="text-end monospace text-danger">
+                    Q @Model.CuotaIGSS.ToString("N2")
+                </td>
+            </tr>
+            @if (Model.ISR > 0)
+            {
+                <tr>
+                    <td>Retención ISR</td>
+                    <td class="text-end monospace text-danger">
+                        Q @Model.ISR.ToString("N2")
+                    </td>
+                </tr>
+            }
+            @if (Model.OtrasDeducciones > 0)
+            {
+                <tr>
+                    <td>Otras deducciones</td>
+                    <td class="text-end monospace text-danger">
+                        Q @Model.OtrasDeducciones.ToString("N2")
+                    </td>
+                </tr>
+            }
+            <tr style="background:#FEF2F2;font-weight:700">
+                <td>TOTAL DEDUCCIONES</td>
+                <td class="text-end monospace text-danger">
+                    Q @Model.TotalDeducciones.ToString("N2")
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Neto -->
+    <div style="background:#ECFDF5;border-radius:8px;padding:16px;
+                border:1px solid #A7F3D0;margin-top:12px;
+                display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:14px;font-weight:700;color:#065F46">
+            SALARIO NETO A RECIBIR
+        </span>
+        <span class="monospace" style="font-size:22px;font-weight:700;color:#065F46">
+            Q @Model.SalarioNeto.ToString("N2")
+        </span>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Observacion))
+    {
+        <div style="margin-top:12px;font-size:12px;color:#64748B;
+                        background:#FFFBEB;padding:10px 14px;border-radius:6px;
+                        border:1px solid #FDE68A">
+            <i class="fa-solid fa-circle-info me-1" style="color:#C4A35A"></i>
+            @Model.Observacion
+        </div>
+    }
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-outline-secondary btn-sm"
+            onclick="Nomina.cerrarModal()">
+        <i class="fa-solid fa-xmark me-1"></i>Cerrar
+    </button>
+    <button type="button" class="btn btn-sm"
+            style="background:#C4A35A;color:#fff"
+            onclick="window.print()">
+        <i class="fa-solid fa-print me-1"></i>Imprimir boleta
+    </button>
+</div>

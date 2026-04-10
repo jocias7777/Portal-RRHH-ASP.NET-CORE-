@@ -1,0 +1,200 @@
+﻿@{
+    ViewData["Title"] = "Reclutamiento";
+    Layout = "_Layout";
+}
+@section HeadStyles {
+    <link rel="stylesheet" href="~/css/views/reclutamiento.css" asp-append-version="true" />
+}
+
+<div class="module-page animate__animated animate__fadeIn">
+
+    <!-- ── HEADER ── -->
+    <div class="module-header">
+        <div class="module-header-left">
+            <div>
+                <h1 class="module-title">Reclutamiento</h1>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ── KPI CARDS ── -->
+    <div class="reclu-kpi-grid">
+        <div class="reclu-kpi-card">
+            <div class="reclu-kpi-icon"><i class="fa-solid fa-briefcase"></i></div>
+            <div>
+                <div class="reclu-kpi-label">Abiertas</div>
+                <div class="reclu-kpi-value" id="kpiPlazasAbiertas">—</div>
+            </div>
+        </div>
+        <div class="reclu-kpi-card">
+            <div class="reclu-kpi-icon"><i class="fa-solid fa-spinner"></i></div>
+            <div>
+                <div class="reclu-kpi-label">En proceso</div>
+                <div class="reclu-kpi-value" id="kpiPlazasEnProceso">—</div>
+            </div>
+        </div>
+        <div class="reclu-kpi-card">
+            <div class="reclu-kpi-icon"><i class="fa-solid fa-users"></i></div>
+            <div>
+                <div class="reclu-kpi-label">Candidatos</div>
+                <div class="reclu-kpi-value" id="kpiTotalCandidatos">—</div>
+            </div>
+        </div>
+        <div class="reclu-kpi-card">
+            <div class="reclu-kpi-icon"><i class="fa-solid fa-user-check"></i></div>
+            <div>
+                <div class="reclu-kpi-label">Contratados</div>
+                <div class="reclu-kpi-value" id="kpiContratados">—</div>
+            </div>
+        </div>
+        <div class="reclu-kpi-card">
+            <div class="reclu-kpi-icon"><i class="fa-solid fa-clock"></i></div>
+            <div>
+                <div class="reclu-kpi-label">Días promedio</div>
+                <div class="reclu-kpi-value" id="kpiTiempoPromedio">—</div>
+            </div>
+        </div>
+        <div class="reclu-kpi-card">
+            <div class="reclu-kpi-icon"><i class="fa-solid fa-percent"></i></div>
+            <div>
+                <div class="reclu-kpi-label">Conversión</div>
+                <div class="reclu-kpi-value" id="kpiTasaConversion">—</div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ── TABS ── -->
+    <ul class="nav nav-tabs reclu-tabs mb-3" id="recluTabs">
+        <li class="nav-item">
+            <button class="nav-link active" id="tabPlazas" data-bs-toggle="tab"
+                    data-bs-target="#panelPlazas" type="button">
+                <i></i>Plazas vacantes
+                
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="tabCandidatos" data-bs-toggle="tab"
+                    data-bs-target="#panelCandidatos" type="button">
+                <i></i>Candidatos
+                
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+
+        <!-- ── PANEL PLAZAS ── -->
+        <div class="tab-pane fade show active" id="panelPlazas">
+            <div class="config-toolbar">
+                @if (User.IsInRole("SuperAdmin") || User.IsInRole("RRHH"))
+                {
+                    <button class="btn btn-reclu" id="btnNuevaPlaza">
+                        <i></i>Nueva Plaza
+                    </button>
+                }
+                <select id="filtroDeptoPlaza" class="filtro-select" style="min-width:180px">
+                    <option value="">Todos los departamentos</option>
+                </select>
+                <select id="filtroEstadoPlaza" class="filtro-select">
+                    <option value="">Todos los estados</option>
+                    <option value="Abierta">Abierta</option>
+                    <option value="EnProceso">En proceso</option>
+                    <option value="Cerrada">Cerrada</option>
+                    <option value="Cancelada">Cancelada</option>
+                </select>
+                <button class="btn btn-outline-secondary btn-sm" id="btnLimpiarPlazas">
+                    <i class="fa-solid fa-rotate-left me-1"></i>
+                </button>
+                <div class="ms-auto">
+                    <span class="badge-count" id="totalPlazas">— plazas</span>
+                </div>
+            </div>
+            <div class="table-card">
+                <table id="tablaPlazas" class="table w-100">
+                    <thead>
+                        <tr>
+                            <th width="44">#</th>
+                            <th>Título</th>
+                            <th>Departamento</th>
+                            <th>Puesto</th>
+                            <th width="130">Salario</th>
+                            <th width="70">Vacantes</th>
+                            <th width="80">Candidatos</th>
+                            <th width="110">Estado</th>
+                            <th width="110">Publicado</th>
+                            <th width="110">Cierre</th>
+                            <th width="100" class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+
+        <!-- ── PANEL CANDIDATOS ── -->
+        <div class="tab-pane fade" id="panelCandidatos">
+            <div class="config-toolbar">
+                @if (User.IsInRole("SuperAdmin") || User.IsInRole("RRHH"))
+                {
+                    <button class="btn btn-outline-reclu" id="btnNuevoCandidato">
+                        <i></i>Nuevo Candidato
+                    </button>
+                }
+                <select id="filtroEtapa" class="filtro-select">
+                    <option value="">Todas las etapas</option>
+                    <option value="Recibido">Recibido</option>
+                    <option value="Entrevista">Entrevista</option>
+                    <option value="Pruebas">Pruebas</option>
+                    <option value="Oferta">Oferta</option>
+                    <option value="Contratado">Contratado</option>
+                    <option value="Rechazado">Rechazado</option>
+                </select>
+                <button class="btn btn-outline-secondary btn-sm" id="btnLimpiarCandidatos">
+                    <i class="fa-solid fa-rotate-left me-1"></i>
+                </button>
+                <div class="ms-auto">
+                    <span class="badge-count" id="totalCandidatos">— candidatos</span>
+                </div>
+            </div>
+            <div class="table-card">
+                <table id="tablaCandidatos" class="table w-100">
+                    <thead>
+                        <tr>
+                            <th width="44">#</th>
+                            <th>Candidato</th>
+                            <th>Plaza</th>
+                            <th>Departamento</th>
+                            <th width="130">Etapa</th>
+                            <th width="110">Postulación</th>
+                            <th width="110">Entrevista</th>
+                            <th width="50">CV</th>
+                            <th width="120" class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@Html.AntiForgeryToken()
+
+@section Scripts {
+    <script src="~/js/modules/reclutamiento.js" asp-append-version="true"></script>
+}
+<script>
+    (function () {
+        if (typeof jQuery !== 'undefined' && typeof jQuery.fn.DataTable !== 'undefined') {
+            if (typeof Reclutamiento !== 'undefined') {
+                Reclutamiento.init();
+            } else {
+                var s = document.createElement('script');
+                s.src = '/js/modules/reclutamiento.js';
+                s.onload = function () { Reclutamiento.init(); };
+                document.body.appendChild(s);
+            }
+        }
+    })();
+</script>

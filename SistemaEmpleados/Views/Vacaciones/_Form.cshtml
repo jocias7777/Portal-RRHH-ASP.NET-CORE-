@@ -1,0 +1,162 @@
+﻿@model SistemaEmpleados.Models.ViewModels.VacacionViewModel
+
+@{
+    var esEdicion = Model.Id > 0;
+}
+
+<div class="modal-header modal-header-vacaciones">
+    <div class="modal-header-inner">
+        <div class="modal-header-icon">
+            <i class="fa-solid fa-umbrella-beach"></i>
+        </div>
+        <div>
+            <h5 class="modal-title">
+                @(esEdicion ? "Editar Solicitud" : "Nueva Solicitud de Vacaciones")
+            </h5>
+            <small class="text-white-50">
+                Ley guatemalteca: 15 días hábiles por año
+            </small>
+        </div>
+    </div>
+    <button type="button" class="btn-close btn-close-white"
+            onclick="Vacaciones.cerrarModal()"></button>
+</div>
+
+<form id="formVacacion" novalidate>
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="Id" value="@Model.Id" />
+
+    <div class="modal-body">
+        <div class="row g-3">
+
+            <div class="col-12">
+                <label class="form-label required-field">Empleado</label>
+                <select name="EmpleadoId" id="selectEmpleadoVac" class="form-select" required>
+                    <option value="">— Seleccionar —</option>
+                    @if (ViewBag.Empleados != null)
+                    {
+                        foreach (var e in ViewBag.Empleados)
+                        {
+                            <option value="@e.Id" selected="@(Model.EmpleadoId == e.Id)">
+                                @e.Nombre
+                            </option>
+                        }
+                    }
+                </select>
+                <div class="invalid-feedback"></div>
+            </div>
+
+            <!-- Días disponibles -->
+            <div class="col-12" id="diasDisponiblesBox" style="display:none">
+                <div class="dias-disponibles-card">
+                    <i class="fa-solid fa-calendar-check me-2"></i>
+                    <span>Días disponibles este año: </span>
+                    <strong id="diasDisponiblesNum">—</strong>
+                    <span> de 15 hábiles</span>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label required-field">Fecha de inicio</label>
+                <input type="date" name="FechaInicio" id="fechaInicioVac"
+                       class="form-control"
+                       value="@Model.FechaInicio.ToString("yyyy-MM-dd")" required />
+                <div class="invalid-feedback"></div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label required-field">Fecha de fin</label>
+                <input type="date" name="FechaFin" id="fechaFinVac"
+                       class="form-control"
+                       value="@Model.FechaFin.ToString("yyyy-MM-dd")" required />
+                <div class="invalid-feedback"></div>
+            </div>
+
+            <!-- Cálculo automático -->
+            <div class="col-12" id="calculoBox" style="display:none">
+                <div class="calculo-dias-card">
+                    <div class="calculo-item">
+                        <span>Días calendario:</span>
+                        <strong id="diasCalendario">0</strong>
+                    </div>
+                    <div class="calculo-item">
+                        <span>Días hábiles:</span>
+                        <strong id="diasHabiles" style="color:#16A34A">0</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Estado</label>
+                <select name="Estado" class="form-select">
+                    @foreach (var s in Enum.GetValues<SistemaEmpleados.Models.Entities.EstadoVacacion>())
+                    {
+                        <option value="@((int)s)" selected="@(Model.Estado == s)">@s</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">Observación</label>
+                <textarea name="Observacion" class="form-control" rows="2"
+                          placeholder="Motivo o notas adicionales...">@Model.Observacion</textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary"
+                onclick="Vacaciones.cerrarModal()">
+            <i class="fa-solid fa-arrow-left me-2"></i>Cancelar
+        </button>
+        <button type="submit" class="btn btn-vacaciones" id="btnGuardarVacacion">
+            <i class="fa-solid fa-check me-2"></i>Guardar
+        </button>
+    </div>
+</form>
+
+<script>
+    (function () {
+        // Cargar días disponibles al seleccionar empleado
+        document.getElementById('selectEmpleadoVac')?.addEventListener('change', async function () {
+            const id = this.value;
+            const box = document.getElementById('diasDisponiblesBox');
+            if (!id) { box.style.display = 'none'; return; }
+
+            try {
+                const res = await fetch(`/Vacaciones/DiasDisponibles?empleadoId=${id}`);
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('diasDisponiblesNum').textContent = data.data.dias;
+                    box.style.display = 'block';
+                }
+            } catch (_) {}
+        });
+
+        // Calcular días al cambiar fechas
+        function calcularDias() {
+            const inicio = document.getElementById('fechaInicioVac')?.value;
+            const fin    = document.getElementById('fechaFinVac')?.value;
+            const box    = document.getElementById('calculoBox');
+
+            if (!inicio || !fin) { box.style.display = 'none'; return; }
+
+            const d1 = new Date(inicio);
+            const d2 = new Date(fin);
+            if (d2 < d1) { box.style.display = 'none'; return; }
+
+            const calendario = Math.ceil((d2 - d1) / (1000 * 60 * 60 * 24)) + 1;
+            let habiles = 0;
+            for (let d = new Date(d1); d <= d2; d.setDate(d.getDate() + 1)) {
+                if (d.getDay() !== 0 && d.getDay() !== 6) habiles++;
+            }
+
+            document.getElementById('diasCalendario').textContent = calendario;
+            document.getElementById('diasHabiles').textContent = habiles;
+            box.style.display = 'block';
+        }
+
+        document.getElementById('fechaInicioVac')?.addEventListener('change', calcularDias);
+        document.getElementById('fechaFinVac')?.addEventListener('change', calcularDias);
+    })();
+</script>

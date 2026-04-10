@@ -1,0 +1,592 @@
+﻿/* ══════════════════════════════════════════════
+   SICE — Módulo Vacaciones y Ausencias
+   Color: #7CB87C (verde claro)
+══════════════════════════════════════════════ */
+
+:root {
+    --vac-color: #0d9488;
+    --vac-dark: #0f766e;
+    --vac-light: #F0FDF4;
+    --vac-border: #BBF7D0;
+}
+
+/* ── Botón primario ── */
+.btn-vacaciones {
+    background: var(--vac-color);
+    color: #fff;
+    border: none;
+    border-radius: 2px;
+    padding: 9px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font-main);
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    line-height: 1.4;
+}
+
+    .btn-vacaciones:hover {
+        background: var(--vac-dark);
+        color: #fff;
+    }
+
+    .btn-vacaciones:active {
+        transform: scale(0.97);
+    }
+
+/* ── Toolbar ── */
+.config-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+/* ── Filtro focus ── */
+.filtro-select:focus {
+    border-color: var(--vac-color);
+}
+
+/* ── Botones de acción — Solo íconos negros ── */
+.btn-action {
+    background: transparent !important; /* Quita el fondo de color */
+    border: none !important;
+    box-shadow: none !important;
+    width: 30px;
+    height: 30px;
+    border-radius: 2px; /* Opcional, pero al ser transparente casi no se nota */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* Configuración del ícono */
+    color: #000000 !important; /* Fuerza el color negro en todos los estados */
+    font-size: 13px; /* Aumentado ligeramente de 13px a 16px */
+    cursor: pointer;
+    transition: transform 0.15s ease; /* Cambiamos el hover por un pequeño efecto de escala */
+}
+
+    /* Efecto al pasar el mouse (como no hay fondo, hacemos que crezcan un poco) */
+    .btn-action:hover {
+        background: transparent !important;
+        transform: scale(1.15); /* Aumenta su tamaño un 15% al pasar el mouse */
+        color: #000000 !important;
+    }
+
+    /* Eliminar colores específicos previos que tenían fondo */
+    .btn-action.btn-ver,
+    .btn-action.btn-editar,
+    .btn-action.btn-eliminar {
+        background: transparent !important;
+        color: #000000 !important;
+    }
+
+/* ── Modal ── */
+.modal-content {
+    border-radius: 4px !important;
+}
+
+.modal-header-inner {
+    gap: 0 !important;
+}
+
+.modal-footer {
+    border-radius: 0 0 4px 4px !important;
+}
+
+.modal-header-vacaciones {
+    background: #fff !important;
+    color: var(--color-dark) !important;
+    padding: 16px 20px !important;
+    border-bottom: 1px solid var(--color-border) !important;
+    border-radius: 4px 4px 0 0 !important;
+}
+
+    .modal-header-vacaciones .modal-title {
+        font-size: 17px !important;
+        font-weight: 600 !important;
+        color: var(--color-dark) !important;
+    }
+
+    .modal-header-vacaciones .btn-close-white {
+        filter: none !important;
+    }
+
+    .modal-header-vacaciones .modal-header-icon {
+        display: none !important;
+    }
+
+    .modal-header-vacaciones small {
+        display: none !important;
+    }
+
+/* ── Campos de formulario ── */
+.form-control, .form-select {
+    border-radius: var(--border-radius-sm) !important;
+    font-size: 13px;
+    font-family: var(--font-main);
+    border-color: var(--color-border);
+}
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--vac-color) !important;
+        box-shadow: 0 0 0 3px rgba(124,184,124,0.15) !important;
+    }
+
+/* ── Badges estado vacacion ── */
+.badge-vac-pendiente {
+    background: #FEF3C7;
+    color: #92400E;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.badge-vac-aprobado {
+    background: #D1FAE5;
+    color: #065F46;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.badge-vac-rechazado {
+    background: #FEE2E2;
+    color: #991B1B;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.badge-vac-cancelado {
+    background: #F1F5F9;
+    color: #475569;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* ── Card días disponibles ── */
+.dias-disponibles-card {
+    background: var(--vac-light);
+    border: 1px solid var(--vac-border);
+    border-radius: var(--border-radius);
+    padding: 10px 16px;
+    font-size: 13px;
+    color: #374151;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+    .dias-disponibles-card strong {
+        font-size: 18px;
+        color: var(--vac-dark);
+        font-family: var(--font-mono);
+    }
+
+/* ── Cálculo de días ── */
+.calculo-dias-card {
+    background: #F8FAFC;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    padding: 12px 16px;
+    display: flex;
+    gap: 32px;
+}
+
+.calculo-item {
+    display: flex;
+    flex-direction: column;
+    font-size: 12px;
+    color: #64748B;
+}
+
+    .calculo-item strong {
+        font-size: 20px;
+        font-family: var(--font-mono);
+        color: var(--color-dark);
+    }
+
+
+
+
+/* ── KPI Grid vacaciones ── */
+.vac-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 992px) {
+    .vac-kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .vac-kpi-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.vac-kpi-card {
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 2PX;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: var(--shadow-sm);
+}
+
+.vac-kpi-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    color: black !important; /* Pone el ícono en negro */
+    background: transparent !important; /* Quita el fondo de color */
+}
+
+.vac-kpi-label {
+    font-size: 11px;
+    color: #64748B;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.vac-kpi-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--color-dark);
+    font-family: var(--font-mono);
+    line-height: 1.2;
+}
+
+/* ── Tabs vacaciones ── */
+.tab-content-vac {
+    display: none;
+}
+
+    .tab-content-vac.active {
+        display: block;
+    }
+
+/* ── Badge ausencia justificada/injustificada ── */
+.badge-justificada {
+    background: #D1FAE5;
+    color: #065F46;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.badge-injustificada {
+    background: #FEE2E2;
+    color: #991B1B;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* ── Saldo días colores ── */
+.dias-ok {
+    color: #065F46;
+    font-weight: 700;
+    font-family: var(--font-mono);
+}
+
+.dias-alerta {
+    color: #92400E;
+    font-weight: 700;
+    font-family: var(--font-mono);
+}
+
+.dias-cero {
+    color: #DC2626;
+    font-weight: 700;
+    font-family: var(--font-mono);
+}
+
+
+/* ── Tabs iguales a Nómina ── */
+.tab-content-vac.active {
+    display: block;
+}
+
+.tab-content-vac {
+    display: none;
+}
+
+/* Sobrescribir el estilo de los tabs para que sean iguales al resto del sistema */
+#tab-solicitudes .module-tabs,
+#tab-ausencias .module-tabs,
+#tab-saldos .module-tabs {
+    border: none;
+}
+
+/* Quitar el borde de la caja de los tabs de vacaciones */
+.module-page .module-tabs {
+    border-bottom: 2px solid var(--color-border);
+    display: flex;
+    gap: 0;
+    margin-bottom: 20px;
+    background: transparent;
+    padding: 0;
+    box-shadow: none;
+    border-radius: 0;
+}
+
+.module-page .module-tab {
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #64748B;
+    cursor: pointer;
+    transition: var(--transition);
+    border-radius: 0;
+    box-shadow: none !important;
+    outline: none;
+}
+
+    .module-page .module-tab:hover {
+        color: var(--vac-color);
+        background: transparent;
+    }
+
+    .module-page .module-tab.active {
+        color: var(--vac-color);
+        border-bottom-color: var(--vac-color);
+        font-weight: 600;
+        background: transparent;
+    }
+
+
+
+/* Agrega esto a tu archivo CSS */
+.vac-kpi-icon i,
+.vac-kpi-icon svg {
+    background: transparent !important;
+    fill: #000000 !important; /* Por si estás usando SVG */
+}
+
+/* Y mantén la regla anterior para quitar el fondo */
+.vac-kpi-icon {
+    background: transparent !important;
+}
+
+
+
+
+/* Redondeo para la tabla de DataTables */
+#tablaVacaciones {
+    border-radius: 2px !important;
+    border-collapse: separate !important; /* Necesario para que el radius funcione en tablas */
+    border-spacing: 0;
+    overflow: hidden;
+}
+
+    /* Para redondear las esquinas superiores del encabezado */
+    #tablaVacaciones thead tr:first-child th:first-child {
+        border-top-left-radius: 2px !important;
+    }
+
+    #tablaVacaciones thead tr:first-child th:last-child {
+        border-top-right-radius: 2px !important;
+    }
+
+    /* Para redondear las esquinas inferiores */
+    #tablaVacaciones tbody tr:last-child td:first-child {
+        border-bottom-left-radius: 2px !important;
+    }
+
+    #tablaVacaciones tbody tr:last-child td:last-child {
+        border-bottom-right-radius: 2px !important;
+    }
+
+
+    /* Esto aplica los 2px al contenedor principal de las tablas */
+.table-card {
+    border-radius: 2px !important;
+    overflow: hidden;
+}
+
+/* Y esto a la tabla misma por si acaso */
+.table-card table, 
+.table-card .table {
+    border-radius: 2px !important;
+}
+
+
+
+/* ── Ajustar tamaño solo para los modales de Vacaciones y Ausencias ── */
+#modalEmpleado .modal-dialog:has(#formVacacion),
+#modalEmpleado .modal-dialog:has(#formAusencia) {
+    max-width: 800px !important; /* 800px es el equivalente exacto a modal-lg */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+
+
+
+/* ── Tamaño y formato de botones en el footer del modal (Vacaciones) ── */
+.modal-footer .btn {
+    min-width: 100px;
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 2px !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+/* ── Botón Cancelar — gris oscuro sin hover ── */
+.modal-footer .btn-outline-secondary {
+    background: #6b7280 !important;
+    color: #fff !important;
+    border: none !important;
+}
+
+    .modal-footer .btn-outline-secondary:hover,
+    .modal-footer .btn-outline-secondary:focus,
+    .modal-footer .btn-outline-secondary:active {
+        background: #6b7280 !important;
+        color: #fff !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+/* ── Botón Guardar (Vacaciones) — mismo tamaño que cancelar ── */
+.modal-footer .btn-vacaciones {
+    min-width: 100px;
+    padding: 8px 18px;
+    border-radius: 2px !important;
+    gap: 4px;
+}
+
+/* ── Anula el margen del ícono para que queden mejor centrados ── */
+.modal-footer .btn i {
+    margin: 0 !important;
+}
+
+/* ── Engrosar los íconos de check y xmark ── */
+.btn-action i.fa-check,
+.btn-action i.fa-xmark {
+    -webkit-text-stroke: 1.5px #000000; /* Le agrega un borde negro al ícono para hacerlo más gordo */
+}
+
+/* ══════════════════════════════════════════════
+   MODAL ELIMINAR — 2px + tamaño uniforme
+══════════════════════════════════════════════ */
+.sice-delete-popup {
+    border-radius: 2px !important;
+}
+
+.sice-delete-actions {
+    gap: 8px;
+}
+
+.sice-delete-btn {
+    min-width: 120px;
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    border-radius: 2px !important;
+    color: #fff;
+}
+
+.sice-delete-btn-cancel {
+    background: #6B7280;
+}
+
+.sice-delete-btn-confirm {
+    background: #DC2626;
+}
+
+/* ══════════════════════════════════════════════
+   TABLA SOLICITUDES VACACIONES — ocultar flechas de orden
+══════════════════════════════════════════════ */
+#tablaVacaciones_wrapper table.dataTable thead .sorting:before,
+#tablaVacaciones_wrapper table.dataTable thead .sorting:after,
+#tablaVacaciones_wrapper table.dataTable thead .sorting_asc:before,
+#tablaVacaciones_wrapper table.dataTable thead .sorting_asc:after,
+#tablaVacaciones_wrapper table.dataTable thead .sorting_desc:before,
+#tablaVacaciones_wrapper table.dataTable thead .sorting_desc:after,
+#tablaVacaciones_wrapper table.dataTable thead .sorting_asc_disabled:before,
+#tablaVacaciones_wrapper table.dataTable thead .sorting_asc_disabled:after,
+#tablaVacaciones_wrapper table.dataTable thead .sorting_desc_disabled:before,
+#tablaVacaciones_wrapper table.dataTable thead .sorting_desc_disabled:after {
+    display: none !important;
+}
+
+#tablaVacaciones_wrapper table.dataTable thead .dt-column-order {
+    display: none !important;
+}
+
+/* ══════════════════════════════════════════════
+   TIPOGRAFÍA HEADER SOLICITUDES = HEADER SALDOS
+══════════════════════════════════════════════ */
+#tab-solicitudes #tablaVacaciones thead th,
+#tablaVacaciones_wrapper table.dataTable thead > tr > th,
+#tablaVacaciones_wrapper table.dataTable thead > tr > td,
+#tablaVacaciones_wrapper table.dataTable thead th.sorting,
+#tablaVacaciones_wrapper table.dataTable thead th.sorting_asc,
+#tablaVacaciones_wrapper table.dataTable thead th.sorting_desc {
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    color: #111827 !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    font-family: var(--font-main) !important;
+    opacity: 1 !important;
+}
+
+#tablaVacaciones_wrapper table.dataTable thead th * {
+    font-weight: 800 !important;
+    color: #111827 !important;
+}
+
+
+/* Unificar encabezados de TODAS las tablas del módulo */
+#tab-solicitudes .table-card table thead th,
+#tab-ausencias .table-card table thead th,
+#tab-saldos .table-card table thead th,
+#tablaVacaciones_wrapper table.dataTable thead th,
+#tablaVacaciones_wrapper table.dataTable thead th .dt-column-title {
+    font-family: var(--font-main) !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    color: #111827 !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+    opacity: 1 !important;
+}
+
+
+
+
+

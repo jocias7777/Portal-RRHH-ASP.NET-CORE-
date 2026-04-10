@@ -1,0 +1,215 @@
+﻿@{
+    ViewData["Title"] = "Prestaciones Laborales";
+    Layout = "_Layout";
+}
+@section HeadStyles {
+    <link rel="stylesheet" href="~/css/views/prestaciones.css" asp-append-version="true" />
+}
+
+<div class="module-page animate__animated animate__fadeIn">
+
+    <!-- ── HEADER ── -->
+    <div class="module-header">
+        <div class="module-header-left">
+            <div>
+                <h1 class="module-title">Prestaciones Laborales</h1>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── KPI CARDS ── -->
+    <div class="prest-kpi-grid">
+        <div class="prest-kpi-card">
+            <!-- Quitamos el style del fondo y del color del icono -->
+            <div class="prest-kpi-icon">
+                <i class="fa-solid fa-gift"></i>
+            </div>
+            <div>
+                <div class="prest-kpi-label">Total registros</div>
+                <div class="prest-kpi-value" id="kpiTotalPrest">0</div>
+            </div>
+        </div>
+
+        <div class="prest-kpi-card">
+            <div class="prest-kpi-icon">
+                <i class="fa-solid fa-clock"></i>
+            </div>
+            <div>
+                <div class="prest-kpi-label">Pendientes de pago</div>
+                <div class="prest-kpi-value" id="kpiPendientesPrest">0</div>
+            </div>
+        </div>
+
+        <div class="prest-kpi-card">
+            <div class="prest-kpi-icon">
+                <i class="fa-solid fa-money-bill-wave"></i>
+            </div>
+            <div>
+                <div class="prest-kpi-label">Total pagado este año</div>
+                <div class="prest-kpi-value" id="kpiTotalPagadoPrest">Q 0.00</div>
+            </div>
+        </div>
+
+        <div class="prest-kpi-card">
+            <div class="prest-kpi-icon">
+                <i class="fa-solid fa-calculator"></i>
+            </div>
+            <div>
+                <div class="prest-kpi-label">Monto calculado pendiente</div>
+                <div class="prest-kpi-value" id="kpiMontoPendiente">Q 0.00</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── TABS ── -->
+    <div class="module-tabs">
+        <button class="module-tab active"
+                data-tab="prestaciones" onclick="PrestacionesTabs.show('prestaciones')">
+            <i></i>Prestaciones
+        </button>
+        <button class="module-tab"
+                data-tab="finiquitos" onclick="PrestacionesTabs.show('finiquitos')">
+            <i></i>Finiquitos
+        </button>
+    </div>
+
+    <!-- ══ TAB 1 — PRESTACIONES ══ -->
+    <div id="tab-prestaciones" class="tab-content-prest active">
+
+        <!-- ESTO AGREGUÉ: toolbar extendido de prestaciones con acciones masivas -->
+        <div class="config-toolbar">
+            @if (User.IsInRole("SuperAdmin") || User.IsInRole("RRHH"))
+            {
+                <button class="btn btn-outline-prestaciones" id="btnGenerarAnio">
+                    <i></i>Generar año
+                </button>
+                <button class="btn btn-prestaciones" id="btnNuevaPrestacion">
+                    <i></i>Nueva Prestación
+                </button>
+            }
+
+
+
+            <select id="filtroDepto" class="filtro-select" style="min-width:180px">
+                <option value="">Todos los departamentos</option>
+            </select>
+            <select id="filtroTipo" class="filtro-select">
+                <option value="">Todos los tipos</option>
+                <option value="Aguinaldo">Aguinaldo</option>
+                <option value="Bono14">Bono 14</option>
+                <option value="Indemnizacion">Indemnización</option>
+                <option value="Finiquito">Finiquito</option>
+            </select>
+            <select id="filtroEstado" class="filtro-select">
+                <option value="">Todos los estados</option>
+                <option value="Pendiente">Pendiente</option>
+                <option value="Calculado">Calculado</option>
+                <option value="Pagado">Pagado</option>
+                <option value="Cancelado">Cancelado</option>
+            </select>
+            <button class="btn btn-outline-secondary btn-sm" id="btnLimpiar">
+                <i class="fa-solid fa-rotate-left me-1"></i>
+            </button>
+
+            <div class="ms-auto">
+                <span class="badge-count" id="totalPrestaciones">— registros</span>
+            </div>
+        </div>
+
+
+
+        <div class="table-card">
+
+            
+            @if (User.IsInRole("SuperAdmin") || User.IsInRole("RRHH"))
+            {
+                <div class="d-flex justify-content-end align-items-center gap-2 mb-2 px-1">
+                    <button class="btn btn-prest-aux" id="btnGenerarPDF"
+                            title="Generar PDF de todas las prestaciones filtradas">
+                        <i class="fa-solid fa-file-pdf me-1"></i>PDF
+                    </button>
+                    <button class="btn btn-prest-aux" id="btnMarcarTodasPagadas"
+                            title="Marcar todas las calculadas como pagadas">
+                        <i class="fa-solid fa-check-double me-1"></i>Marcar pagadas
+                    </button>
+                    <button class="btn btn-prest-aux" id="btnPagarTodas"
+                            title="Registrar pago masivo">
+                        <i class="fa-solid fa-money-bill-wave me-1"></i>Pagar todas
+                    </button>
+                </div>
+            }
+            <table id="tablaPrestaciones" class="table w-100">
+                <thead>
+                    <tr>
+                        <th width="44">#</th>
+                        <th>Empleado</th>
+                        <th>Departamento</th>
+                        <th width="120">Tipo</th>
+                        <th width="80">Período</th>
+                        <th width="60">Meses</th>
+                        <th width="130">Salario base</th>
+                        <th width="130">Monto</th>
+                        <th width="110">Estado</th>
+                        <th width="110">Fecha pago</th>
+                        <th width="120" class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+
+    <!-- ══ TAB 2 — FINIQUITOS ══ -->
+    <div id="tab-finiquitos" class="tab-content-prest">
+        <div class="config-toolbar">
+            @if (User.IsInRole("SuperAdmin") || User.IsInRole("RRHH"))
+            {
+                <button class="btn btn-prestaciones" id="btnCalcularFiniquito">
+                    <i class="fa-solid fa-calculator me-2"></i>Calcular Finiquito
+                </button>
+            }
+            <div class="ms-auto">
+                <span class="badge-count" id="totalFiniquitos">— finiquitos</span>
+            </div>
+        </div>
+        <div class="table-card">
+            <table class="table w-100">
+                <thead>
+                    <tr>
+                        <th width="44">#</th>
+                        <th>Empleado</th>
+                        <th width="150">Departamento</th>
+                        <th width="110">Años trabajados</th>
+                        <th width="130">Salario base</th>
+                        <th width="120">Aguinaldo</th>
+                        <th width="120">Bono 14</th>
+                        <th width="130">Indemnización</th>
+                        <th width="140">Total finiquito</th>
+                        <th width="100" class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="bodyFiniquitos"></tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+@Html.AntiForgeryToken()
+
+@section Scripts {
+    <script src="~/js/modules/prestaciones.js" asp-append-version="true"></script>
+}
+<script>
+    (function () {
+        if (typeof jQuery !== 'undefined' && typeof jQuery.fn.DataTable !== 'undefined') {
+            if (typeof Prestaciones !== 'undefined') {
+                Prestaciones.init();
+            } else {
+                var s = document.createElement('script');
+                s.src = '/js/modules/prestaciones.js';
+                s.onload = function () { Prestaciones.init(); };
+                document.body.appendChild(s);
+            }
+        }
+    })();
+</script>

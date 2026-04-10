@@ -1,0 +1,113 @@
+﻿@model SistemaEmpleados.Models.ViewModels.CandidatoViewModel
+
+@{
+    var esEdicion = Model.Id > 0;
+}
+
+<div class="modal-header modal-header-reclu">
+    <div class="modal-header-inner">
+        <div class="modal-header-icon">
+            <i class="fa-solid fa-user-plus"></i>
+        </div>
+        <div>
+            <h5 class="modal-title">@(esEdicion ? "Editar Candidato" : "Nuevo Candidato")</h5>
+            <small class="text-white-50">Proceso de selección</small>
+        </div>
+    </div>
+    <button type="button" class="btn-close btn-close-white"
+            onclick="Reclutamiento.cerrarModal()"></button>
+</div>
+
+<form id="formCandidato" novalidate>
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="Id" value="@Model.Id" />
+    <input type="hidden" name="FormType" value="candidato" />
+
+    <div class="modal-body">
+        <div class="row g-3">
+
+            <div class="col-12">
+                <label class="form-label required-field">Plaza vacante</label>
+                <select name="PlazaVacanteId" class="form-select" required>
+                    <option value="">— Seleccionar plaza —</option>
+                    @if (ViewBag.Plazas != null)
+                    {
+                        foreach (var p in ViewBag.Plazas)
+                        {
+                            <option value="@p.Id" selected="@(Model.PlazaVacanteId == p.Id)">
+                                @p.Titulo
+                            </option>
+                        }
+                    }
+                </select>
+                <div class="invalid-feedback"></div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label required-field">Nombre completo</label>
+                <input type="text" name="Nombre" class="form-control"
+                       value="@Model.Nombre" placeholder="Juan García" required />
+                <div class="invalid-feedback"></div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label required-field">Correo electrónico</label>
+                <input type="email" name="Email" class="form-control"
+                       value="@Model.Email" placeholder="candidato@email.com" required />
+                <div class="invalid-feedback"></div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Teléfono</label>
+                <input type="tel" name="Telefono" class="form-control"
+                       value="@Model.Telefono" placeholder="5xxx-xxxx" />
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Archivo de CV</label>
+                <input type="hidden" name="CvUrl" value="@Model.CvUrl" />
+                <input type="file" name="cvFile" class="form-control"
+                       accept=".pdf,.doc,.docx" />
+                @if (!string.IsNullOrWhiteSpace(Model.CvUrl))
+                {
+                    <small class="text-muted d-block mt-1">
+                        CV actual:
+                        <a href="@Model.CvUrl" target="_blank">Ver archivo</a>
+                    </small>
+                }
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Etapa del proceso</label>
+                <select name="Etapa" class="form-select">
+                    @foreach (var e in Enum.GetValues<SistemaEmpleados.Models.Entities.EtapaCandidato>())
+                    {
+                        <option value="@((int)e)" selected="@(Model.Etapa == e)">@e</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Fecha de entrevista</label>
+                <input type="datetime-local" name="FechaEntrevista" class="form-control"
+                       value="@Model.FechaEntrevista?.ToString("yyyy-MM-ddTHH:mm")" />
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">Observaciones</label>
+                <textarea name="Observacion" class="form-control" rows="2"
+                          placeholder="Notas sobre el candidato...">@Model.Observacion</textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary"
+                onclick="Reclutamiento.cerrarModal()">
+            <i class="fa-solid fa-arrow-left me-2"></i>Cancelar
+        </button>
+        <button type="submit" class="btn btn-reclu" id="btnGuardarCandidato">
+            <i class="fa-solid fa-check me-2"></i>Guardar candidato
+        </button>
+    </div>
+</form>

@@ -1,0 +1,208 @@
+﻿/* ══════════════════════════════════════════════
+   SICE — Módulo Configuración
+   Color: #4A90D9 (azul, mismo que Personal)
+══════════════════════════════════════════════ */
+
+:root {
+    --config-color: #0d9488; /* teal — igual que asistencia */
+    --config-dark: #0f766e;
+    --config-light: #f0fdfa;
+    --config-border: #99f6e4;
+}
+
+.btn-config {
+    background: var(--config-color);
+    color: #fff;
+    border: none;
+    border-radius: 2px;
+    padding: 9px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font-main);
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+}
+
+    .btn-config:hover {
+        background: var(--config-dark);
+        color: #fff;
+    }
+
+    .btn-config:active {
+        transform: scale(0.97);
+    }
+
+.config-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.config-tabs .nav-link {
+    font-size: 13px;
+    font-weight: 500;
+    color: #64748B;
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    padding: 10px 16px;
+}
+
+    .config-tabs .nav-link.active {
+        color: var(--config-color);
+        border-bottom-color: var(--config-color);
+        background: transparent;
+    }
+
+/* Badges estado */
+.badge-estado-activo {
+    background: #D1FAE5;
+    color: #065F46;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.badge-estado-inactivo {
+    background: #F1F5F9;
+    color: #475569;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+
+.modal-footer .btn {
+    border-radius: 2px;
+}
+
+.modal .form-label {
+    color: #0f172a;
+    font-weight: 600;
+}
+
+/* ── Botones del modal footer ── */
+.modal-footer .btn {
+    min-width: 100px;
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 2px !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+    /* ── Sin margen extra en íconos ── */
+    .modal-footer .btn i {
+        margin: 0 !important;
+    }
+
+/* ── Botón Cancelar — mismo gris que personal y asistencia ── */
+.modal-footer .btn-outline-secondary {
+    background: #6b7280 !important;
+    color: #fff !important;
+    border: none !important;
+}
+
+    .modal-footer .btn-outline-secondary:hover,
+    .modal-footer .btn-outline-secondary:focus,
+    .modal-footer .btn-outline-secondary:active {
+        background: #6b7280 !important;
+        color: #fff !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+/* ── Botón Guardar ── */
+.modal-footer .btn-config {
+    min-width: 100px;
+    padding: 8px 18px;
+    border-radius: 2px !important;
+    gap: 4px;
+}
+
+/* ── btn-config también necesita gap y line-height consistente ── */
+.btn-config {
+    gap: 4px;
+    line-height: 1.4;
+    height: auto;
+}
+
+/* ══════════════════════════════════════════════
+   UNIFICACIÓN DE MODALES (Departamento/Puestos)
+   referencia: Vacaciones
+══════════════════════════════════════════════ */
+#modalDepto .modal-content,
+#modalPuesto .modal-content {
+    border-radius: 4px !important;
+}
+
+#modalDepto .modal-header,
+#modalPuesto .modal-header,
+#modalDepto .modal-header.modal-header-personal,
+#modalPuesto .modal-header.modal-header-personal {
+    background: #fff !important;
+    color: var(--color-dark) !important;
+    padding: 16px 20px !important;
+    border-bottom: 1px solid var(--color-border) !important;
+    border-radius: 4px 4px 0 0 !important;
+}
+
+#modalDepto .modal-title,
+#modalPuesto .modal-title {
+    font-size: 17px !important;
+    font-weight: 600 !important;
+    color: var(--color-dark) !important;
+}
+
+#modalDepto .modal-header .modal-header-icon,
+#modalPuesto .modal-header .modal-header-icon,
+#modalDepto .modal-header small,
+#modalPuesto .modal-header small {
+    display: none !important;
+}
+
+#modalDepto .modal-footer .btn,
+#modalPuesto .modal-footer .btn {
+    min-width: 100px;
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 2px !important;
+}
+
+/* ══════════════════════════════════════════════
+   MODAL ELIMINAR — 2px + tamaño uniforme
+══════════════════════════════════════════════ */
+.sice-delete-popup {
+    border-radius: 2px !important;
+}
+
+.sice-delete-actions {
+    gap: 8px;
+}
+
+.sice-delete-btn {
+    min-width: 120px;
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    border-radius: 2px !important;
+    color: #fff;
+}
+
+.sice-delete-btn-cancel {
+    background: #6B7280;
+}
+
+.sice-delete-btn-confirm {
+    background: #DC2626;
+}

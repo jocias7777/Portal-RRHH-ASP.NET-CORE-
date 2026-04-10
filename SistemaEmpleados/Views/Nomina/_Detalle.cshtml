@@ -1,0 +1,765 @@
+﻿@{
+    var planilla = ViewBag.Planilla as
+        SistemaEmpleados.Models.ViewModels.PlanillaListViewModel;
+    var detalles = (ViewBag.Detalles as
+        IEnumerable<SistemaEmpleados.Models.ViewModels.DetallePlanillaViewModel>)
+        ?? Enumerable.Empty<SistemaEmpleados.Models.ViewModels.DetallePlanillaViewModel>();
+
+    bool puedeEditar = planilla?.Estado != "Pagada" && planilla?.Estado != "Anulada";
+    bool estaAnulada = planilla?.Estado == "Anulada";
+    bool tieneBonoFourteen = detalles.Any(d => d.Bono14 > 0);
+    bool tieneAguinaldo = detalles.Any(d => d.Aguinaldo > 0);
+    bool tienePrestamos = detalles.Any(d => d.DescuentoPrestamo > 0);
+
+    var cult = new System.Globalization.CultureInfo("es-GT");
+
+    decimal totalPatronal = detalles.Sum(d => d.CuotaIGSSPatronal);
+    decimal totalSalarios = detalles.Sum(d => d.SalarioBase);
+    decimal totalHExtra = detalles.Sum(d => d.HorasExtraMonto);
+    decimal totalBono250 = detalles.Sum(d => d.Bonificacion250);
+    decimal totalBono14 = detalles.Sum(d => d.Bono14);
+    decimal totalAguinaldo = detalles.Sum(d => d.Aguinaldo);
+    decimal totalDeveng = detalles.Sum(d => d.TotalDevengado);
+    decimal totalIGSS = detalles.Sum(d => d.CuotaIGSS);
+    decimal totalISR = detalles.Sum(d => d.ISR);
+    decimal totalPrest = detalles.Sum(d => d.DescuentoPrestamo);
+    decimal totalDed = detalles.Sum(d => d.TotalDeducciones);
+    decimal totalNeto = detalles.Sum(d => d.SalarioNeto);
+    decimal costoEmpresa = (planilla?.TotalDevengado ?? 0) + totalPatronal + (totalSalarios * 0.02m);
+
+    var irtraStr = (totalSalarios * 0.01m).ToString("N2", cult);
+    var intecapStr = (totalSalarios * 0.01m).ToString("N2", cult);
+    var costoStr = costoEmpresa.ToString("N2", cult);
+    var patronalStr = totalPatronal.ToString("N2", cult);
+
+    string estadoClass = planilla?.Estado switch
+    {
+        "Pagada" => "estado-pagada",
+        "Anulada" => "estado-anulada",
+        "Procesada" => "estado-procesada",
+        _ => "estado-borrador"
+    };
+}
+
+<style>
+    .det-modal {
+        font-family: 'Inter', 'DM Sans', sans-serif;
+        color: #0f172a;
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 20px 55px rgba(15, 23, 42, .24);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* HEADER */
+    .det-header {
+        background: #ffffff;
+        padding: 24px 32px 16px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+    }
+
+    .det-header-left {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .det-titulo {
+        font-size: 24px;
+        font-weight: 800;
+        color: #0f172a;
+        letter-spacing: -0.5px;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .title-icon {
+        color: #1e293b;
+        font-size: 20px;
+    }
+
+        .det-titulo .sep {
+            color: #cbd5e1;
+            font-weight: 300;
+        }
+
+        .det-titulo .mes {
+            color: #3b82f6;
+        }
+
+    .det-subtitulo {
+        font-size: 11px;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+        .det-subtitulo .sep {
+            color: #cbd5e1;
+        }
+
+        .det-subtitulo .gen-info {
+            text-transform: none;
+            font-weight: 400;
+        }
+
+    .det-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+    }
+
+    .estado-borrador {
+        background: #e0f2fe;
+        color: #0369a1;
+    }
+
+    .estado-procesada {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .estado-pagada {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .estado-anulada {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .det-close {
+        background: transparent;
+        border: none;
+        color: #64748b;
+        font-size: 20px;
+        cursor: pointer;
+        transition: color 0.2s;
+        padding: 4px;
+    }
+
+        .det-close:hover {
+            color: #0f172a;
+        }
+
+    /* KPI ROW COMPACTO Y ESTRUCTURADO */
+    .det-kpi-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1.3fr;
+        gap: 16px;
+        padding: 8px 32px 24px;
+        background: #ffffff;
+        align-items: stretch;
+    }
+
+    .det-kpi {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 16px 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 8px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    }
+
+    .det-kpi-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .det-kpi-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        background: #f1f5f9;
+        color: #0f172a;
+        flex-shrink: 0;
+    }
+
+    .det-kpi-label {
+        font-size: 10px;
+        font-weight: 800;
+        color: #0f172a;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        line-height: 1.2;
+    }
+
+    .det-kpi-label-2lines {
+        font-size: 10px;
+        font-weight: 800;
+        color: #0f172a;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        display: flex;
+        flex-direction: column;
+        line-height: 1.2;
+    }
+
+    .det-kpi-value {
+        font-size: 22px;
+        font-weight: 600;
+        letter-spacing: -0.3px;
+        padding-left: 44px; /* Alinea el número debajo del texto, ignorando el espacio del icono */
+    }
+
+        .det-kpi-value.verde {
+            color: #059669;
+        }
+
+        .det-kpi-value.oscuro {
+            color: #0f172a;
+        }
+
+        .det-kpi-value.rojo {
+            color: #7f1d1d;
+        }
+
+    /* COSTOS PATRONALES */
+    .det-patronal {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 16px 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    }
+
+    .det-patronal-title {
+        font-size: 10px;
+        font-weight: 800;
+        color: #0f172a;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        margin-bottom: 8px;
+    }
+
+    .det-patronal-item {
+        font-size: 11px;
+        color: #475569;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 4px;
+    }
+
+        .det-patronal-item strong {
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+    .det-patronal-total {
+        margin-top: 6px;
+        padding-top: 8px;
+        font-size: 11px;
+        color: #0f172a;
+        display: flex;
+        justify-content: space-between;
+        font-weight: 800;
+    }
+
+    /* TABLA */
+    .det-table-wrap {
+        padding: 0 32px;
+        background: #ffffff;
+        overflow-x: auto;
+    }
+
+    .det-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 900px;
+    }
+
+        .det-table thead th {
+            background: #ffffff;
+            padding: 12px 10px;
+            font-size: 11px;
+            font-weight: 800;
+            color: #0f172a;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            border-bottom: 1px solid #e2e8f0;
+            border-top: 1px solid #e2e8f0;
+            white-space: nowrap;
+        }
+
+            .det-table thead th.th-r {
+                text-align: right;
+            }
+
+        .det-table thead th .th-icon {
+            margin-right: 6px;
+            color: #64748b;
+            font-size: 11px;
+            vertical-align: -1px;
+        }
+
+        .det-table tbody tr {
+            border-bottom: 1px solid #f1f5f9;
+            background: #ffffff;
+        }
+
+            .det-table tbody tr:hover {
+                background: #f8fafc;
+            }
+
+        .det-table td {
+            padding: 14px 10px;
+            vertical-align: middle;
+            font-size: 13px;
+        }
+
+            .det-table td.td-r {
+                text-align: right;
+                font-variant-numeric: tabular-nums;
+                font-weight: 500;
+                color: #334155;
+            }
+
+    /* COLUMNAS CON FONDO */
+    .col-ded {
+        background-color: #fef2f2 !important;
+    }
+
+    .col-net {
+        background-color: #f0fdf4 !important;
+    }
+
+    .txt-ded {
+        color: #dc2626 !important;
+        font-weight: 600;
+    }
+
+    .txt-net {
+        color: #16a34a !important;
+        font-weight: 600;
+    }
+
+    .emp-nombre {
+        font-weight: 600;
+        color: #0f172a;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .emp-sub {
+        font-size: 11px;
+        color: #64748b;
+        margin-top: 2px;
+    }
+
+    /* TFOOT */
+    .det-table tfoot td {
+        padding: 16px 10px;
+        font-size: 13px;
+        font-weight: 800;
+        color: #0f172a;
+        border-top: 2px solid #e2e8f0;
+        background: #ffffff;
+    }
+
+        .det-table tfoot td.td-r {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .det-table tfoot td.tf-label {
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+    /* FOOTER BOTONES */
+    .det-footer {
+        padding: 20px 32px;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .footer-left, .footer-right {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .btn-det {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 18px;
+        border-radius: 6px;
+        font-size: 11.5px;
+        font-weight: 800;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s;
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    .btn-det-ghost {
+        background: #ffffff;
+        color: #475569;
+        border: 1px solid #cbd5e1;
+    }
+
+        .btn-det-ghost:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+    .btn-det-blue {
+        background: #2563eb;
+        color: #ffffff;
+    }
+
+        .btn-det-blue:hover {
+            background: #1d4ed8;
+        }
+
+    .btn-det-green {
+        background: #16a34a;
+        color: #ffffff;
+    }
+
+        .btn-det-green:hover {
+            background: #15803d;
+        }
+
+    .btn-det-amber {
+        background: #f59e0b;
+        color: #ffffff;
+    }
+
+        .btn-det-amber:hover {
+            background: #d97706;
+        }
+
+    .btn-det-red {
+        background: #dc2626;
+        color: #ffffff;
+    }
+
+        .btn-det-red:hover {
+            background: #b91c1c;
+        }
+
+    .act-btns {
+        display: inline-flex;
+        gap: 8px;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .btn-act {
+        color: #64748b;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-size: 15px;
+        transition: color 0.2s;
+        padding: 2px 4px;
+    }
+
+        .btn-act:hover {
+            color: #0f172a;
+        }
+</style>
+
+<div class="det-modal">
+
+    <!-- ── HEADER ── -->
+    <div class="det-header">
+        <div class="det-header-left">
+            <div class="det-titulo">
+                <i class="fa-solid fa-file-invoice-dollar title-icon"></i>
+                PLANILLA DE NÓMINA <span class="sep">|</span> <span class="mes">@planilla?.Periodo?.ToUpper()</span>
+            </div>
+            <div class="det-subtitulo">
+                <i class="fa-solid fa-user-group"></i> @planilla?.TotalEmpleados EMPLEADOS
+                <span class="sep">|</span>
+                <span class="det-badge @estadoClass">ESTADO: @planilla?.Estado?.ToUpper()</span>
+                <span class="sep">|</span>
+                <span class="gen-info">Generated by: @planilla?.GeneradoPor - @planilla?.FechaGeneracion</span>
+
+                @if (tieneBonoFourteen)
+                {
+                    <span class="sep">|</span>
+                    <span class="det-badge" style="background:#fff7ed;color:#c2410c;">
+                        <i class="fa-solid fa-gift me-1"></i> Bono 14
+                    </span>
+                }
+                @if (tieneAguinaldo)
+                {
+                    <span class="sep">|</span>
+                    <span class="det-badge" style="background:#fff7ed;color:#c2410c;">
+                        <i class="fa-solid fa-gift me-1"></i> Aguinaldo
+                    </span>
+                }
+            </div>
+        </div>
+        <button class="det-close" onclick="Nomina.cerrarModal()">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <!-- ── KPI ROW EXACTO ── -->
+    <div class="det-kpi-row">
+
+        <div class="det-kpi">
+            <div class="det-kpi-header">
+                <div class="det-kpi-icon">
+                    <i class="fa-solid fa-money-bill-1-wave"></i>
+                </div>
+                <div class="det-kpi-label">TOTAL NETO A PAGAR</div>
+            </div>
+            <div class="det-kpi-value verde">Q @planilla?.TotalNeto.ToString("N2", cult)</div>
+        </div>
+
+        <div class="det-kpi">
+            <div class="det-kpi-header">
+                <div class="det-kpi-icon">
+                    <i class="fa-solid fa-sack-dollar"></i>
+                </div>
+                <div class="det-kpi-label-2lines">
+                    <span>TOTAL DEVENGADO</span>
+                    <span>(BRUTO)</span>
+                </div>
+            </div>
+            <div class="det-kpi-value oscuro">Q @planilla?.TotalDevengado.ToString("N2", cult)</div>
+        </div>
+
+        <div class="det-kpi">
+            <div class="det-kpi-header">
+                <div class="det-kpi-icon">
+                    <i class="fa-solid fa-scissors"></i>
+                </div>
+                <div class="det-kpi-label">TOTAL DEDUCCIONES</div>
+            </div>
+            <div class="det-kpi-value rojo">Q @planilla?.TotalDeducciones.ToString("N2", cult)</div>
+        </div>
+
+        <div class="det-patronal">
+            <div class="det-patronal-title">COSTOS PATRONALES (EMPRESA)</div>
+            <div class="det-patronal-item">
+                <span>IGSS (12.67%)</span><strong>Q @patronalStr</strong>
+            </div>
+            <div class="det-patronal-item">
+                <span>IRTRA (1%)</span><strong>Q @irtraStr</strong>
+            </div>
+            <div class="det-patronal-item">
+                <span>INTECAP (1%)</span><strong>Q @intecapStr</strong>
+            </div>
+            <div class="det-patronal-total">
+                <span>Total Costo Empresa:</span><span>Q @costoStr</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ── TABLA ── -->
+    <div class="det-table-wrap">
+        <table class="det-table">
+            <thead>
+                <tr>
+                    <th style="min-width:200px; text-align: left;"><i class="fa-solid fa-users th-icon"></i>EMPLEADO</th>
+                    <th class="th-r"><i class="fa-solid fa-money-bill-wave th-icon"></i>SALARIO</th>
+                    <th class="th-r"><i class="fa-solid fa-clock th-icon"></i>H.EXTRA</th>
+                    <th class="th-r"><i class="fa-solid fa-gift th-icon"></i>BONO 250</th>
+                    @if (tieneBonoFourteen)
+                    {
+                        <th class="th-r"><i class="fa-solid fa-gift th-icon"></i>BONO 14</th>
+                    }
+                    @if (tieneAguinaldo)
+                    {
+                        <th class="th-r"><i class="fa-solid fa-gift th-icon"></i>AGUINALDO</th>
+                    }
+                    <th class="th-r"><i class="fa-solid fa-calculator th-icon"></i>TOTAL DEV.</th>
+                    <th class="th-r"><i class="fa-solid fa-building-columns th-icon"></i>IGSS LAB.</th>
+                    <th class="th-r"><i class="fa-solid fa-percent th-icon"></i>ISR</th>
+                    @if (tienePrestamos)
+                    {
+                        <th class="th-r"><i class="fa-solid fa-hand-holding-dollar th-icon"></i>PRÉSTAMOS</th>
+                    }
+                    <th class="th-r col-ded txt-ded"><i class="fa-solid fa-scissors th-icon"></i>TOTAL DED.</th>
+                    <th class="th-r col-net txt-net"><i class="fa-solid fa-circle-check th-icon"></i>NETO</th>
+                    <th class="text-center" style="width:100px"><i class="fa-solid fa-gear th-icon"></i>ACCIONES</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var d in detalles)
+                {
+                    var prestStr = d.DescuentoPrestamo.ToString("N2", cult);
+                    var otrosBonosF = d.OtrosBonos.ToString("F2", System.Globalization.CultureInfo.InvariantCulture);
+                    var otrasDedsF = d.OtrasDeducciones.ToString("F2", System.Globalization.CultureInfo.InvariantCulture);
+                    var obsEsc = (d.Observacion ?? "").Replace("'", "\\\\'");
+
+                    <tr>
+                        <td>
+                            <div class="emp-nombre">
+                                @d.NombreEmpleado
+                                @if (!string.IsNullOrWhiteSpace(d.Observacion))
+                                {
+                                    <i class="fa-solid fa-triangle-exclamation" style="color:#eab308; font-size:11px;" title="@d.Observacion"></i>
+                                }
+                            </div>
+                            <div class="emp-sub">@d.CodigoEmpleado - @d.Departamento</div>
+                        </td>
+                        <td class="td-r">Q @d.SalarioBase.ToString("N2", cult)</td>
+                        <td class="td-r">
+                            @(d.HorasExtraMonto > 0 ? $"Q {d.HorasExtraMonto.ToString("N2", cult)}" : "—")
+                        </td>
+                        <td class="td-r">Q @d.Bonificacion250.ToString("N2", cult)</td>
+
+                        @if (tieneBonoFourteen)
+                        {
+                            <td class="td-r">@(d.Bono14 > 0 ? $"Q {d.Bono14.ToString("N2", cult)}" : "—")</td>
+                        }
+                        @if (tieneAguinaldo)
+                        {
+                            <td class="td-r">@(d.Aguinaldo > 0 ? $"Q {d.Aguinaldo.ToString("N2", cult)}" : "—")</td>
+                        }
+
+                        <td class="td-r">Q @d.TotalDevengado.ToString("N2", cult)</td>
+                        <td class="td-r">Q @d.CuotaIGSS.ToString("N2", cult)</td>
+                        <td class="td-r">
+                            @if (d.ISR > 0)
+                            {
+                                <div style="display:flex; flex-direction:column; align-items:flex-end; line-height:1.2">
+                                    <span>Q</span>
+                                    <span>@d.ISR.ToString("N2", cult)</span>
+                                </div>
+                            }
+                            else
+                            {
+                                <text>—</text>
+                            }
+                        </td>
+
+                        @if (tienePrestamos)
+                        {
+                            <td class="td-r">
+                                @if (d.DescuentoPrestamo > 0)
+                                {
+                                    <span style="display:flex; justify-content:flex-end; align-items:center; gap:6px;">
+                                        <i class="fa-solid fa-triangle-exclamation" style="color:#f59e0b; font-size:11px" title="Cuota préstamo Q @prestStr"></i> Q @prestStr
+                                    </span>
+                                }
+                                else
+                                {
+                                    <text>—</text>
+                                }
+                            </td>
+                        }
+
+                        <td class="td-r col-ded txt-ded">Q @d.TotalDeducciones.ToString("N2", cult)</td>
+                        <td class="td-r col-net txt-net">Q @d.SalarioNeto.ToString("N2", cult)</td>
+                        <td class="text-center">
+                            <div class="act-btns">
+                                <button class="btn-act" title="Ver boleta" onclick="Nomina.verBoleta(@d.Id)">
+                                    <i class="fa-regular fa-eye"></i>
+                                </button>
+                                @if (puedeEditar)
+                                {
+                                    <button class="btn-act" title="Editar" onclick="Nomina.editarDetalle(@d.Id, @otrosBonosF, @otrasDedsF, '@obsEsc')">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </button>
+                                }
+                                <a class="btn-act" title="Descargar boleta PDF" href="/Nomina/BoletaPdf/@d.Id" target="_blank">
+                                    <i class="fa-solid fa-file-pdf"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td class="tf-label">Totals</td>
+                    <td class="td-r">Q @totalSalarios.ToString("N2", cult)</td>
+                    <td class="td-r">Q @totalHExtra.ToString("N2", cult)</td>
+                    <td class="td-r">Q @totalBono250.ToString("N2", cult)</td>
+                    @if (tieneBonoFourteen)
+                    {
+                        <td class="td-r">Q @totalBono14.ToString("N2", cult)</td>
+                    }
+                    @if (tieneAguinaldo)
+                    {
+                        <td class="td-r">Q @totalAguinaldo.ToString("N2", cult)</td>
+                    }
+                    <td class="td-r">Q @totalDeveng.ToString("N2", cult)</td>
+                    <td class="td-r">Q @totalIGSS.ToString("N2", cult)</td>
+                    <td class="td-r">Q @totalISR.ToString("N2", cult)</td>
+                    @if (tienePrestamos)
+                    {
+                        <td class="td-r">Q @totalPrest.ToString("N2", cult)</td>
+                    }
+                    <td class="td-r col-ded txt-ded">Q @totalDed.ToString("N2", cult)</td>
+                    <td class="td-r col-net txt-net">Q @totalNeto.ToString("N2", cult)</td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <!-- ── FOOTER ── -->
+    <div class="det-footer">
+        <div class="footer-left">
+            <button class="btn-det btn-det-ghost" onclick="Nomina.cerrarModal()">
+                <i class="fa-solid fa-xmark"></i> Cerrar ventana
+            </button>
+            <a href="/Nomina/PlanillaPdf/@planilla?.Id" target="_blank" class="btn-det btn-det-blue">
+                <i class="fa-solid fa-file-pdf"></i> Descargar PDF planilla
+            </a>
+        </div>
+
+        <div class="footer-right">
+            @if (planilla?.Estado == "Borrador" || planilla?.Estado == "Procesada")
+            {
+                <button class="btn-det btn-det-green" onclick="Nomina.marcarPagada(@planilla?.Id); Nomina.cerrarModal();">
+                    <i class="fa-solid fa-check"></i> Marcar como pagada y finalizar
+                </button>
+                <button class="btn-det btn-det-amber" onclick="if(confirm('¿Anular esta planilla?')) Nomina.anular(@planilla?.Id)">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Anular planilla
+                </button>
+            }
+
+            @if (estaAnulada)
+            {
+                <button class="btn-det btn-det-red" onclick="if(confirm('¿Eliminar permanentemente esta planilla anulada?')) Nomina.eliminar(@planilla?.Id)">
+                    <i class="fa-solid fa-trash"></i> Eliminar planilla
+                </button>
+            }
+        </div>
+    </div>
+
+</div>

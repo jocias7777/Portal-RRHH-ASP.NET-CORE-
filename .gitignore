@@ -1,0 +1,76 @@
+# Build results
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+
+# Visual Studio files
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+
+# NuGet
+*.nupkg
+**/packages/*
+project.lock.json
+project.fragment.lock.json
+**/[Pp]ackages/*
+
+# Test results
+[Tt]est[Rr]esults/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+**/Dummy.txt
+
+# MVC/Webforms
+ AspEditor/
+ AspCache/
+
+# Visual Studio profiling
+*.psess
+*.vsp
+*.vspx
+
+# Guid Files
+*.guid
+
+# User specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Installers
+*.msi
+*.msm
+*.msp
+
+# Build Events
+*.disco
+*.xsd
+
+# Misc
+[Ll]ogs/
+[Ll]og*/
+*.cache
+Thumbs.db
+Web.config
+appsettings.*.json
+appsettings.Development.json
+appsettings.json
+*.orig

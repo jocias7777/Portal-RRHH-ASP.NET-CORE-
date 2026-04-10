@@ -1,0 +1,154 @@
+﻿@* ═══════════════════════════════════════════════
+   Detalle.cshtml — Vista parcial de empleado
+   FIX NullRef: iniciales con null-conditional
+   FIX badge: clase estado-badge / estado-{x}
+               en lugar de badge-{x} que no existía en CSS
+═══════════════════════════════════════════════ *@
+@model SistemaEmpleados.Models.ViewModels.EmpleadoDetalleViewModel
+
+@{
+    @* FIX NullRef: calcular iniciales de forma segura *@
+    var inicial1 = Model.PrimerNombre?.FirstOrDefault() ?? '?';
+    var inicial2 = Model.PrimerApellido?.FirstOrDefault() ?? '?';
+    var estadoCss = Model.Estado.ToString().ToLowerInvariant();
+}
+
+<div class="modal-header modal-header-personal">
+    <div class="modal-header-inner">
+        <div class="modal-header-icon">
+            <i class="fa-solid fa-id-badge" aria-hidden="true"></i>
+        </div>
+        <div>
+            <h5 class="modal-title" id="modalEmpleadoLabel">@Model.NombreCompleto</h5>
+            <small class="text-white-50">@Model.Codigo — @Model.NombrePuesto</small>
+        </div>
+    </div>
+    <button type="button" class="btn-close btn-close-white"
+            data-bs-dismiss="modal" aria-label="Cerrar"></button>
+</div>
+
+<div class="modal-body detalle-body">
+
+    <!-- ── Avatar + nombre ── -->
+    <div class="detalle-avatar-section">
+        @if (!string.IsNullOrEmpty(Model.FotoUrl))
+        {
+            <img src="@Model.FotoUrl"
+                 class="detalle-avatar-img"
+                 alt="Foto de @Model.NombreCompleto" />
+        }
+        else
+        {
+            @* FIX NullRef: usar variables precalculadas *@
+            <div class="detalle-avatar-initials" aria-hidden="true">
+                @inicial1@inicial2
+            </div>
+        }
+        <div>
+            <h4 class="detalle-nombre">@Model.NombreCompleto</h4>
+            <span class="detalle-puesto">@Model.NombrePuesto · @Model.NombreDepartamento</span>
+            <br />
+            @* FIX badge: usar clase estado-badge + estado-{x} que sí existe en personal.css *@
+            <span class="estado-badge estado-@estadoCss mt-1">@Model.Estado</span>
+        </div>
+    </div>
+
+    <!-- ── Cards de información ── -->
+    <div class="row g-3 mt-2">
+
+        <!-- Personal -->
+        <div class="col-md-4">
+            <div class="detalle-card">
+                <div class="detalle-card-title">
+                    <i class="fa-solid fa-user me-2" aria-hidden="true"></i>Personal
+                </div>
+                <div class="detalle-item">
+                    <span>CUI:</span>
+                    <strong>@Model.CUI</strong>
+                </div>
+                <div class="detalle-item">
+                    <span>Email:</span>
+                    <strong>@Model.Email</strong>
+                </div>
+                <div class="detalle-item">
+                    <span>Teléfono:</span>
+                    <strong>@(Model.Telefono ?? "—")</strong>
+                </div>
+                <div class="detalle-item">
+                    <span>Género:</span>
+                    <strong>@Model.Genero</strong>
+                </div>
+                <div class="detalle-item">
+                    <span>Nacimiento:</span>
+                    <strong>@Model.FechaNacimiento.ToString("dd/MM/yyyy")</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Laboral -->
+        <div class="col-md-4">
+            <div class="detalle-card">
+                <div class="detalle-card-title">
+                    <i class="fa-solid fa-briefcase me-2" aria-hidden="true"></i>Laboral
+                </div>
+                <div class="detalle-item">
+                    <span>Ingreso:</span>
+                    <strong>@Model.FechaIngreso.ToString("dd/MM/yyyy")</strong>
+                </div>
+                <div class="detalle-item">
+                    <span>Antigüedad:</span>
+                    <strong>@Model.AniosServicio años</strong>
+                </div>
+                <div class="detalle-item">
+                    <span>Contrato:</span>
+                    <strong>@Model.TipoContrato</strong>
+                </div>
+                <div class="detalle-item">
+                    <span>Salario:</span>
+                    <strong class="monospace">Q @Model.SalarioBase.ToString("N2")</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Documentos -->
+        <div class="col-md-4">
+            <div class="detalle-card">
+                <div class="detalle-card-title">
+                    <i class="fa-solid fa-file-shield me-2" aria-hidden="true"></i>Documentos
+                </div>
+                <div class="detalle-item">
+                    <span>NIT:</span>
+                    <strong>@(Model.NIT ?? "—")</strong>
+                </div>
+                <div class="detalle-item">
+                    <span>IGSS:</span>
+                    <strong>@(Model.NumeroIGSS ?? "—")</strong>
+                </div>
+                <div class="detalle-item">
+                    <span>IRTRA:</span>
+                    <strong>@(Model.NumeroIRTRA ?? "—")</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Observaciones (condicional) -->
+        @if (!string.IsNullOrEmpty(Model.Observaciones))
+        {
+            <div class="col-12">
+                <div class="detalle-card">
+                    <div class="detalle-card-title">
+                        <i class="fa-solid fa-note-sticky me-2" aria-hidden="true"></i>Observaciones
+                    </div>
+                    <p class="mb-0" style="font-size:13px">@Model.Observaciones</p>
+                </div>
+            </div>
+        }
+
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+        <i class="fa-solid fa-xmark me-1" aria-hidden="true"></i>Cerrar
+    </button>
+</div>
