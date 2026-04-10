@@ -18,6 +18,8 @@ public class DataTablesRequest
     public string? FechaDesde { get; set; }
     public string? FechaHasta { get; set; }
     public string? TipoPrestacion { get; set; }
+    public int? EmpleadoId { get; set; }
+    public string? Tipo { get; set; }
 }
 
 public class DataTablesResponse<T>

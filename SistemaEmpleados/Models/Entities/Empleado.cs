@@ -59,6 +59,7 @@ public class Empleado : BaseEntity
     public int PuestoId { get; set; }
     public Puesto Puesto { get; set; } = null!;
 
+    public ICollection<Documento> Documentos { get; set; } = new List<Documento>();
 
     public string? ApplicationUserId { get; set; }
     public ApplicationUser? ApplicationUser { get; set; }

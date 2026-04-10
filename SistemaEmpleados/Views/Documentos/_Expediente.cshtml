@@ -1,0 +1,106 @@
+@model SistemaEmpleados.Models.ViewModels.ExpedienteEmpleadoViewModel
+
+@if (Model == null || Model.EmpleadoId == 0)
+{
+    <div class="lista-empty">
+        <i class="fa-solid fa-folder-open" style="font-size:24px;margin-bottom:8px;opacity:0.4"></i>
+        <p style="margin:0">Seleccione un empleado para ver su expediente</p>
+    </div>
+}
+else
+{
+    <div class="expediente-container">
+        <!-- HEADER EMPLEADO -->
+        <div class="expediente-header">
+            <div class="expediente-avatar">
+                <i class="fa-solid fa-user"></i>
+            </div>
+            <div class="expediente-info">
+                <h4>@Model.EmpleadoNombre</h4>
+                <p>@Model.EmpleadoCodigo - @Model.Departamento</p>
+            </div>
+            <div class="expediente-progress">
+                <div class="progress-ring">
+                    <svg viewBox="0 0 36 36">
+                        <path class="progress-ring-bg"
+                              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <path class="progress-ring-fill"
+                              stroke-dasharray="@Model.PorcentajeCompletado, 100"
+                              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    </svg>
+                    <span class="progress-text">@Model.PorcentajeCompletado%</span>
+                </div>
+                <small class="text-muted">@Model.DocumentosCompletos de @Model.DocumentosTotales documentos</small>
+            </div>
+        </div>
+
+        <!-- CHECKLIST -->
+        <div class="checklist-section">
+            <h5 class="checklist-title">
+                <i class="fa-solid fa-list-check me-2"></i>Documentos Requeridos
+            </h5>
+            <div class="checklist-items">
+                @foreach (var req in Model.Requeridos)
+                {
+                    <div class="checklist-item @(req.EstaPresente ? "completo" : "faltante")">
+                        <div class="checklist-icon">
+                            <i class="fa-solid fa-@(req.EstaPresente ? "check-circle" : "circle-xmark")"></i>
+                        </div>
+                        <div class="checklist-info">
+                            <div class="checklist-name">@req.Nombre</div>
+                            <div class="checklist-type">@req.Tipo</div>
+                        </div>
+                        @if (!req.EstaPresente)
+                        {
+                            <button class="btn btn-sm btn-documentos" onclick="Documentos.openFormExpediente('@req.Tipo')">
+                                <i class="fa-solid fa-plus me-1"></i>Agregar
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-sm btn-outline" onclick="Documentos.ver(@req.DocumentoId)">
+                                <i class="fa-solid fa-eye me-1"></i>Ver
+                            </button>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- DOCUMENTOS LIST -->
+        <div class="documentos-section">
+            <h5 class="documentos-title">
+                <i class="fa-solid fa-folder me-2"></i>Historial de Documentos (@Model.Documentos.Count)
+            </h5>
+            @if (!Model.Documentos.Any())
+            {
+                <div class="lista-empty">
+                    <p>No hay documentos registrados</p>
+                </div>
+            }
+            else
+            {
+                <div class="documentos-list">
+                    @foreach (var doc in Model.Documentos)
+                    {
+                        <div class="documento-item" onclick="Documentos.openDetalle(@doc.Id)">
+                            <div class="documento-icon">
+                                <i class="fa-solid fa-file-lines"></i>
+                            </div>
+                            <div class="documento-info">
+                                <div class="documento-titulo">@doc.Titulo</div>
+                                <div class="documento-meta">
+                                    <span>@doc.Tipo</span>
+                                    <span>@doc.CreatedAt</span>
+                                </div>
+                            </div>
+                            <div class="documento-estado">
+                                <span class="badge-@doc.Estado.ToLower()">@doc.Estado</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+}

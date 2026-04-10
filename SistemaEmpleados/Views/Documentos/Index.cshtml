@@ -1,0 +1,110 @@
+@{
+    ViewData["Title"] = "Gestión de Documentos";
+    Layout = "_Layout";
+}
+@section HeadStyles {
+    <link rel="stylesheet" href="~/css/views/documentos.css" asp-append-version="true" />
+}
+<div class="module-page animate__animated animate__fadeIn">
+    <div class="module-header">
+        <div class="module-header-left">
+            <div>
+                <h1 class="module-title">Gestión de Documentos</h1>
+            </div>
+        </div>
+    </div>
+    
+    <ul class="nav nav-tabs module-tabs" id="documentosTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tabLista" type="button">
+                Listado
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabAlertas" type="button">
+                Alertas
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabExpediente" type="button">
+                Expediente
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content module-tab-content">
+        <div class="tab-pane fade show active" id="tabLista" role="tabpanel">
+            <div class="config-toolbar">
+                @if (User.IsInRole("SuperAdmin") || User.IsInRole("RRHH"))
+                {
+                    <button class="btn btn-documentos" id="btnNuevoDocumento">
+                        Nuevo Documento
+                    </button>
+                    <button class="btn btn-documentos" id="btnCargaMasiva">
+                        Carga Masiva
+                    </button>
+                }
+                <select id="filtroDepartamento" class="filtro-select" style="min-width:180px">
+                    <option value="">Todos los departamentos</option>
+                </select>
+                <select id="filtroEmpleado" class="filtro-select" style="min-width:200px">
+                    <option value="">Todos los empleados</option>
+                </select>
+                <select id="filtroTipo" class="filtro-select">
+                    <option value="">Todos los tipos</option>
+                    <option value="Contrato">Contrato</option>
+                    <option value="Rol">Rol de pagos</option>
+                    <option value="Certificado">Certificado</option>
+                    <option value="Constancia">Constancia</option>
+                    <option value="Credencial">Credencial</option>
+                    <option value="Antecedentes">Antecedentes</option>
+                    <option value="Otro">Otro</option>
+                </select>
+                <select id="filtroEstado" class="filtro-select">
+                    <option value="">Todos los estados</option>
+                    <option value="Activo">Activo</option>
+                    <option value="Expirado">Expirado</option>
+                    <option value="PendienteFirma">Pendiente Firma</option>
+                    <option value="Archivado">Archivado</option>
+                </select>
+                <button class="btn btn-outline-secondary btn-sm" id="btnLimpiarFiltros">
+                </button>
+                <div class="ms-auto">
+                    <span class="badge-count" id="totalDocumentos">— documentos</span>
+                </div>
+            </div>
+            <div class="lista-card" id="listaDocumentos"></div>
+            <div class="pagination-bar" id="paginacionDocumentos"></div>
+        </div>
+
+        <div class="tab-pane fade" id="tabAlertas" role="tabpanel">
+            <div class="lista-card" id="listaAlertas"></div>
+        </div>
+
+        <div class="tab-pane fade" id="tabExpediente" role="tabpanel">
+            <div class="config-toolbar mb-3">
+                <select id="filtroExpediente" class="filtro-select" style="min-width:250px">
+                    <option value="">— Seleccionar empleado —</option>
+                </select>
+                <button class="btn btn-documentos" onclick="Documentos.verExpediente()">
+                    Buscar
+                </button>
+            </div>
+            <div id="expedienteContent"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalDocumento" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div id="modalDocumentoBody">
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.AntiForgeryToken()
+@section Scripts {
+    <script src="~/js/modules/documentos.js" asp-append-version="true"></script>
+}

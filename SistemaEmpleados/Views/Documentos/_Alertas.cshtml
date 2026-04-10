@@ -1,0 +1,39 @@
+@model List<SistemaEmpleados.Models.ViewModels.DocumentoAlertaViewModel>
+
+@{
+    var alertas = Model as List<SistemaEmpleados.Models.ViewModels.DocumentoAlertaViewModel>;
+}
+
+@if (alertas == null || !alertas.Any())
+{
+    <div class="lista-empty">
+        <i class="fa-solid fa-check-circle"></i>
+        <p>No hay alertas</p>
+    </div>
+}
+else
+{
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Tipo</th>
+                <th>Documento</th>
+                <th>Empleado</th>
+                <th>Dias</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var a in alertas)
+            {
+                <tr>
+                    <td><span class="badge bg-@(a.DiasRestantes < 0 ? "danger" : "warning")">@a.TipoAlerta</span></td>
+                    <td>@a.Titulo</td>
+                    <td>@a.EmpleadoNombre</td>
+                    <td>@Math.Abs(a.DiasRestantes) dias</td>
+                    <td><button class="btn btn-sm btn-primary" onclick="Documentos.ver(@a.DocumentoId)">Ver</button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

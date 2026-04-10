@@ -32,6 +32,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<HistorialEstadoPlaza> HistorialesEstadoPlaza { get; set; }
     public DbSet<Entrevista> Entrevistas { get; set; }
     public DbSet<NotaCandidato> NotasCandidato { get; set; }
+    public DbSet<Documento> Documentos { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -304,6 +305,19 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .WithMany(c => c.Notas)
             .HasForeignKey(n => n.CandidatoId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        // ── Documento ──
+        builder.Entity<Documento>()
+            .HasQueryFilter(d => !d.IsDeleted);
+
+        builder.Entity<Documento>()
+            .HasOne(d => d.Empleado)
+            .WithMany(e => e.Documentos)
+            .HasForeignKey(d => d.EmpleadoId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<Documento>()
+            .Property(d => d.TamanioBytes).HasPrecision(18, 2);
 
         builder.Entity<Candidato>()
             .Property(c => c.CalificacionGeneral).HasPrecision(3, 1);

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SistemaEmpleados.Data;
 
@@ -11,9 +12,11 @@ using SistemaEmpleados.Data;
 namespace SistemaEmpleados.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260410031457_AddDocumentos")]
+    partial class AddDocumentos
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -622,13 +625,7 @@ namespace SistemaEmpleados.Data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("Modalidad")
-                        .HasColumnType("int");
-
                     b.Property<string>("NombreArchivo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NumeroFolio")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Observaciones")
@@ -650,9 +647,6 @@ namespace SistemaEmpleados.Data.Migrations
 
                     b.Property<string>("UrlArchivo")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UrlExterna")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

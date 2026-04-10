@@ -73,6 +73,9 @@ builder.Services.AddScoped<IEvaluacionService, EvaluacionService>();
 
 builder.Services.AddScoped<IReclutamientoService, SistemaEmpleados.Services.Implementations.ReclutamientoService>();
 
+builder.Services.AddScoped<IDocumentoRepository, DocumentoRepository>();
+builder.Services.AddScoped<IDocumentoService, DocumentoService>();
+
 
 // ── AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));

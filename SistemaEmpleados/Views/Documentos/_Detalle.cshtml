@@ -1,0 +1,180 @@
+@model SistemaEmpleados.Models.ViewModels.DocumentoDetalleViewModel
+
+@{
+    var iconClass = Model.Tipo switch
+    {
+        SistemaEmpleados.Models.Entities.TipoDocumento.Contrato => "fa-file-contract",
+        SistemaEmpleados.Models.Entities.TipoDocumento.Rol => "fa-file-invoice",
+        SistemaEmpleados.Models.Entities.TipoDocumento.Certificado => "fa-certificate",
+        SistemaEmpleados.Models.Entities.TipoDocumento.Constancia => "fa-file-lines",
+        SistemaEmpleados.Models.Entities.TipoDocumento.Credencial => "fa-id-card",
+        _ => "fa-file"
+    };
+
+    var tipoColor = Model.Tipo switch
+    {
+        SistemaEmpleados.Models.Entities.TipoDocumento.Contrato => "#4A90D9",
+        SistemaEmpleados.Models.Entities.TipoDocumento.Rol => "#10B981",
+        SistemaEmpleados.Models.Entities.TipoDocumento.Certificado => "#F59E0B",
+        SistemaEmpleados.Models.Entities.TipoDocumento.Constancia => "#8B5CF6",
+        SistemaEmpleados.Models.Entities.TipoDocumento.Credencial => "#EC4899",
+        _ => "#6B7280"
+    };
+}
+
+<div class="modal-header">
+    <div class="modal-header-inner">
+        <div class="modal-header-icon">
+            <i class="fa-solid @iconClass" style="color: @tipoColor"></i>
+        </div>
+        <div>
+            <h5 class="modal-title">@Model.Titulo</h5>
+            <small class="text-muted">@Model.EmpleadoNombre (@Model.EmpleadoCodigo)</small>
+        </div>
+    </div>
+    <button type="button" class="btn-close" onclick="Documentos.cerrarModal()" aria-label="Cerrar"></button>
+</div>
+
+<div class="modal-body detalle-body">
+    <div class="detalle-avatar-section">
+        <div class="detalle-avatar-initials" style="background: linear-gradient(135deg, @tipoColor, #374151)">
+            <i class="fa-solid @iconClass"></i>
+        </div>
+        <div>
+            <h4 class="detalle-nombre" style="margin-bottom: 4px">@Model.Titulo</h4>
+            <div class="d-flex gap-2 align-items-center">
+                <span class="badge" style="background: @tipoColor; color: #fff">@Model.Tipo</span>
+                <span class="badge badge-@Model.Estado.ToString().ToLower()">@Model.Estado</span>
+                @if (Model.EstaExpirado)
+                {
+                    <span class="badge bg-danger">Expirado</span>
+                }
+                else if (Model.PorExpirar)
+                {
+                    <span class="badge bg-warning text-dark">Por expirar</span>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mt-2">
+        <div class="col-md-6">
+            <div class="detalle-card">
+                <div class="detalle-card-title">Información</div>
+                <div class="detalle-item">
+                    <span>Empleado</span>
+                    <strong>@Model.EmpleadoNombre</strong>
+                </div>
+                <div class="detalle-item">
+                    <span>Código</span>
+                    <strong>@Model.EmpleadoCodigo</strong>
+                </div>
+                <div class="detalle-item">
+                    <span>Tipo</span>
+                    <strong>@Model.Tipo</strong>
+                </div>
+                <div class="detalle-item">
+                    <span>Estado</span>
+                    <strong>@Model.Estado</strong>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="detalle-card">
+                <div class="detalle-card-title">Fechas</div>
+                <div class="detalle-item">
+                    <span>Creación</span>
+                    <strong>@Model.FechaCreacion</strong>
+                </div>
+                @if (Model.FechaExpiracion.HasValue)
+                {
+                    <div class="detalle-item">
+                        <span>Expiración</span>
+                        <strong class="@(Model.EstaExpirado ? "text-danger" : Model.PorExpirar ? "text-warning" : "")">
+                            @Model.FechaExpiracion.Value.ToString("dd/MM/yyyy")
+                        </strong>
+                    </div>
+                }
+                else
+                {
+                    <div class="detalle-item">
+                        <span>Expiración</span>
+                        <strong class="text-muted">Sin fecha</strong>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.Descripcion) || !string.IsNullOrEmpty(Model.Observaciones))
+    {
+        <div class="row g-3 mt-2">
+            @if (!string.IsNullOrEmpty(Model.Descripcion))
+            {
+                <div class="col-12">
+                    <div class="detalle-card">
+                        <div class="detalle-card-title">Descripción</div>
+                        <p class="mb-0" style="font-size: 13px; color: #374151">@Model.Descripcion</p>
+                    </div>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Model.Observaciones))
+            {
+                <div class="col-12">
+                    <div class="detalle-card">
+                        <div class="detalle-card-title">Observaciones</div>
+                        <p class="mb-0" style="font-size: 13px; color: #374151">@Model.Observaciones</p>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <div class="row g-3 mt-2">
+        <div class="col-12">
+            <div class="detalle-card">
+                <div class="detalle-card-title">Archivo</div>
+                @if (!string.IsNullOrEmpty(Model.NombreArchivo))
+                {
+                    <div class="d-flex align-items-center gap-3 mb-2">
+                        <a href="/Documentos/Descargar/@Model.Id" target="_blank" class="btn btn-documentos">
+                            <i class="fa-solid fa-download me-2"></i>Descargar
+                        </a>
+                        <span class="text-muted" style="font-size: 12px">
+                            @Model.NombreArchivo
+                            @if (Model.TamanioBytes.HasValue)
+                            {
+                                <span class="ms-2">(@(Model.TamanioBytes.Value / 1024.0) KB)</span>
+                            }
+                        </span>
+                    </div>
+                }
+                else if (!string.IsNullOrEmpty(Model.UrlArchivo))
+                {
+                    <div class="d-flex align-items-center gap-3 mb-2">
+                        <a href="@Model.UrlArchivo" target="_blank" class="btn btn-documentos">
+                            <i class="fa-solid fa-external-link-alt me-2"></i>Ver en línea
+                        </a>
+                        <span class="text-muted" style="font-size: 12px">URL externa</span>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">Sin archivo adjunto</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-outline-secondary" onclick="Documentos.cerrarModal()">
+        <i class="fa-solid fa-arrow-left me-2"></i>Cerrar
+    </button>
+    @if (User.IsInRole("SuperAdmin") || User.IsInRole("RRHH"))
+    {
+        <button type="button" class="btn btn-documentos" onclick="Documentos.openForm(@Model.Id)">
+            <i class="fa-solid fa-pen me-2"></i>Editar
+        </button>
+    }
+</div>
