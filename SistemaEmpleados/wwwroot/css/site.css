@@ -48,7 +48,11 @@ body {
 
 .main-content {
     margin-top: var(--topbar-height);
-    padding: 24px 32px;
+    padding: 24px 1.5vw;
+    width: 97vw;
+    max-width: 1800px;
+    margin-left: auto;
+    margin-right: auto;
     flex: 1;
 }
 
@@ -436,8 +440,8 @@ table.dataTable {
 ══════════════════════════════════════════════ */
 
 .module-page {
-    max-width: 1400px;
-    margin: 0 auto;
+    width: 100%;
+    max-width: 100%;
 }
 
 .module-header {
